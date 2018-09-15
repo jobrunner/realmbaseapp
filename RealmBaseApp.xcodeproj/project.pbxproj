@@ -14,6 +14,8 @@
 		24F14D47214CFD6500C3CC36 /* ItemsTableTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D46214CFD6500C3CC36 /* ItemsTableTableViewController.swift */; };
 		24F14D49214CFEA800C3CC36 /* ItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D48214CFEA800C3CC36 /* ItemViewController.swift */; };
 		24F14D4B214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D4A214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift */; };
+		24F14D4D214D07D700C3CC36 /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D4C214D07D700C3CC36 /* PersistenceManager.swift */; };
+		24F14D4F214D082500C3CC36 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D4E214D082500C3CC36 /* Item.swift */; };
 		FD6632D882EC817F69667110 /* Pods_RealmBaseApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +30,8 @@
 		24F14D46214CFD6500C3CC36 /* ItemsTableTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsTableTableViewController.swift; sourceTree = "<group>"; };
 		24F14D48214CFEA800C3CC36 /* ItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemViewController.swift; sourceTree = "<group>"; };
 		24F14D4A214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemUpdateTableViewController.swift; sourceTree = "<group>"; };
+		24F14D4C214D07D700C3CC36 /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
+		24F14D4E214D082500C3CC36 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		9990476C01AD892C4D0B50FD /* Pods-RealmBaseApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp.release.xcconfig"; sourceTree = "<group>"; };
 		ABE48FE4499375834E4F3C53 /* Pods-RealmBaseApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -73,6 +77,8 @@
 				24F14D46214CFD6500C3CC36 /* ItemsTableTableViewController.swift */,
 				24F14D48214CFEA800C3CC36 /* ItemViewController.swift */,
 				24F14D4A214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift */,
+				24F14D4C214D07D700C3CC36 /* PersistenceManager.swift */,
+				24F14D4E214D082500C3CC36 /* Item.swift */,
 			);
 			path = RealmBaseApp;
 			sourceTree = "<group>";
@@ -212,6 +218,8 @@
 				24F14D47214CFD6500C3CC36 /* ItemsTableTableViewController.swift in Sources */,
 				24F14D49214CFEA800C3CC36 /* ItemViewController.swift in Sources */,
 				24F14D4B214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift in Sources */,
+				24F14D4F214D082500C3CC36 /* Item.swift in Sources */,
+				24F14D4D214D07D700C3CC36 /* PersistenceManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
