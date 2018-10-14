@@ -10,9 +10,18 @@ import UIKit
 
 class ItemViewController: UITableViewController {
 
+    var currentItem: Item?
+    
+    @IBOutlet weak var idLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configureView(withItem: currentItem)
+        
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -20,20 +29,21 @@ class ItemViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
+//    override func numberOfSections(in tableView: UITableView) -> Int {
+//        return 2
+//    }
+//
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+        if let _ = currentItem {
+            tableView.restore()
+            return 2
+        }
+        else {
+            tableView.setEmptyMessage("No Items.")
+        }
+        
         return 0
     }
 
@@ -82,14 +92,34 @@ class ItemViewController: UITableViewController {
     }
     */
 
-    /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
+        // mit enums bauen
+        
+        switch segue.identifier {
+            case "ItemUpdateSegue":
+//                if let vc = segue.destination.presentingViewController as? ItemUpdateTableViewController {
+                
+                if let vc = segue.destination.children.first as? ItemUpdateTableViewController {
+                    print("View controller für Present gefunden")
+
+                    print("currentItem übergeben:")
+                    vc.currentItem = currentItem
+                }
+            default:
+                print("refactor this with enums!")
+        }
+        
+        print("prepare for segue ends")
+    }
+}
+
+extension ItemViewController {
+
+    func configureView(withItem item: Item?) {
+        idLabel.text = item?.id ?? ""
+        nameLabel.text = item?.name ?? ""
+    }
 }
