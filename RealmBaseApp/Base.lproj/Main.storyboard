@@ -12,11 +12,12 @@
         <!--The Item-->
         <scene sceneID="Jll-fL-HZM">
             <objects>
-                <tableViewController title="The Item" id="LfU-WE-51k" customClass="ItemViewController" customModule="RealmBaseApp" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="LfU-WE-51k" customClass="ItemViewController" customModule="RealmBaseApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="kGk-vU-bUm">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="457"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
                             <tableViewSection id="Fbs-fj-Zot">
                                 <cells>
@@ -98,9 +99,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="457"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ItemCell" id="Y80-NZ-pfQ" customClass="ItemCell" customModule="RealmBaseApp" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" shouldIndentWhileEditing="NO" reuseIdentifier="ItemCell" id="Y80-NZ-pfQ" customClass="ItemCell" customModule="RealmBaseApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Y80-NZ-pfQ" id="jGn-Ch-kh6">
@@ -132,6 +132,24 @@
                             <outlet property="delegate" destination="PPU-LR-xyi" id="R4W-gp-7iO"/>
                         </connections>
                     </tableView>
+                    <toolbarItems>
+                        <barButtonItem systemItem="trash" id="V3O-be-6Ty">
+                            <connections>
+                                <action selector="deleteAction:" destination="PPU-LR-xyi" id="eVg-b0-87U"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="aoy-tl-EeS"/>
+                        <barButtonItem title="Archive" id="Wlp-bn-VRJ">
+                            <connections>
+                                <action selector="archiveAction:" destination="PPU-LR-xyi" id="QSZ-N2-Suu"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem title="Favorit" image="star" id="Dki-KP-zUK">
+                            <connections>
+                                <action selector="favoriteAction:" destination="PPU-LR-xyi" id="q26-cc-Min"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" title="Items" id="DmL-nM-wdQ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="cFu-r0-67k">
                             <connections>
@@ -141,8 +159,12 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="addAction" destination="cFu-r0-67k" id="UYo-Hh-7hW"/>
+                        <outlet property="archiveActionItem" destination="Wlp-bn-VRJ" id="tfB-GK-E1b"/>
+                        <outlet property="deleteActionItem" destination="V3O-be-6Ty" id="Ga7-Zf-jj2"/>
+                        <outlet property="favoriteActionItem" destination="Dki-KP-zUK" id="qSB-ty-Un0"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xta-L2-2wA" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -153,16 +175,17 @@
         <scene sceneID="VFh-iY-pww">
             <objects>
                 <tableViewController title="Item Data" id="967-NA-QsG" customClass="ItemUpdateTableViewController" customModule="RealmBaseApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="56" sectionHeaderHeight="28" sectionFooterHeight="28" id="5o6-kl-dgl">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="56" sectionHeaderHeight="18" sectionFooterHeight="18" id="5o6-kl-dgl">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="457"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="sectionIndexTrackingBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
                             <tableViewSection id="SLL-2d-wgl">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="ItemUpdateCell" rowHeight="55" id="I08-mh-0SZ">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="55"/>
+                                        <rect key="frame" x="0.0" y="35" width="320" height="55"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="I08-mh-0SZ" id="y5d-Et-u19">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="54.5"/>
@@ -183,7 +206,7 @@
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" spellCheckingType="yes" returnKeyType="done" enablesReturnKeyAutomatically="YES" textContentType="name"/>
                                                     <connections>
-                                                        <action selector="nameTestFieldEditingChanged:" destination="967-NA-QsG" eventType="editingChanged" id="EC9-z5-MFh"/>
+                                                        <action selector="nameTextFieldEditingChanged:" destination="967-NA-QsG" eventType="editingChanged" id="bUe-DD-lp3"/>
                                                     </connections>
                                                 </textField>
                                             </subviews>
@@ -209,7 +232,11 @@
                     </tableView>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="3DF-hk-hEc"/>
-                        <barButtonItem systemItem="trash" id="X4z-E4-6Rb"/>
+                        <barButtonItem systemItem="trash" id="X4z-E4-6Rb">
+                            <connections>
+                                <action selector="deleteAction:" destination="967-NA-QsG" id="4r4-gg-rJz"/>
+                            </connections>
+                        </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" title="Edit Item" id="KLg-6H-Vfp">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="nBV-w2-9yn">
@@ -219,7 +246,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="lzR-y7-brR">
                             <connections>
-                                <action selector="saveAction:" destination="967-NA-QsG" id="ecU-Xr-K5b"/>
+                                <action selector="saveActionItem:" destination="I3A-hj-hKt" id="iOi-ml-Ci1"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -232,17 +259,22 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AAa-fe-TTT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="I3A-hj-hKt" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2730" y="-263.02816901408448"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="44p-Pa-aM4">
             <objects>
-                <navigationController id="13N-TG-Ywi" sceneMemberID="viewController">
+                <navigationController toolbarHidden="NO" id="13N-TG-Ywi" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" largeTitles="YES" id="d36-Nd-RXq">
                         <rect key="frame" x="0.0" y="20" width="320" height="91"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="lzY-to-0OU">
+                        <rect key="frame" x="0.0" y="524" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="PPU-LR-xyi" kind="relationship" relationship="rootViewController" id="oNa-Sk-RSP"/>
                     </connections>
@@ -270,7 +302,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6rl-CO-b1U" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" largeTitles="YES" id="7sU-c1-Ta1">
-                        <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="320" height="91"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -305,8 +337,11 @@
             <point key="canvasLocation" x="1900.3521126760563" y="-260.625"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="star" width="26" height="26"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Uu5-T5-kiZ"/>
-        <segue reference="A0s-jA-Zu5"/>
+        <segue reference="Ofg-ld-wV1"/>
     </inferredMetricsTieBreakers>
 </document>

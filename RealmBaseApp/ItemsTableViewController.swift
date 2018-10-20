@@ -17,32 +17,47 @@ class ItemsTableViewController: UITableViewController {
     var itemViewController: ItemViewController? = nil
     
     var filteredItems: Results<Item>? = nil
-    
-    @IBOutlet weak var addAction: UIBarButtonItem!
+    var selectedItems: [IndexPath] = []
 
+    @IBOutlet weak var addAction: UIBarButtonItem!
+    @IBOutlet weak var deleteActionItem: UIBarButtonItem!
+    @IBOutlet weak var archiveActionItem: UIBarButtonItem!
+    @IBOutlet weak var favoriteActionItem: UIBarButtonItem!
     
+    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+        deleteItems()
+    }
+
+    @IBAction func archiveAction(_ sender: UIBarButtonItem) {
+        archiveItems()
+    }
+
+    @IBAction func favoriteAction(_ sender: UIBarButtonItem) {
+        favoriteItems()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        navigationItem.leftBarButtonItem = editButtonItem
+//        tableView.dataSource = self
+//        tableView.delegate = self
         
+        // Uncomment the following line to preserve selection between presentations
+        clearsSelectionOnViewWillAppear = true
+
+        navigationItem.leftBarButtonItem = editButtonItem
+        navigationController?.setToolbarHidden(true, animated: false)
         configureSearch()
         
-        if let split = splitViewController {
-            let controllers = split.viewControllers
-            
-            itemViewController = (controllers[controllers.count-1]
-                as! UINavigationController).topViewController
-                as? ItemViewController
-        }
+        
+//        if let split = splitViewController {
+//            let controllers = split.viewControllers
+//            
+//            itemViewController = (controllers[controllers.count-1]
+//                as! UINavigationController).topViewController
+//                as? ItemViewController
+//        }
 
-//        print(PersistenceManager.sharedInstance.fileUrl())
-//        
 //        // nur nach der Installation:
 //        PersistenceManager.sharedInstance.delete()
 //
@@ -80,15 +95,6 @@ class ItemsTableViewController: UITableViewController {
     }
     */
 
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
 
     /*
     // Override to support conditional editing of the table view.
@@ -98,85 +104,111 @@ class ItemsTableViewController: UITableViewController {
     }
     */
 
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
+    // Data source: Override to support editing the table view.
+    override func tableView(_ tableView: UITableView,
+                            commit editingStyle: UITableViewCell.EditingStyle,
+                            forRowAt indexPath: IndexPath) {
+        print("commit Editing starts on indexPath: \(indexPath) editingStyle: \(editingStyle)")
 
-    /*
-    // Override to support rearranging the table view.
-    */
-//    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-//        print("Reihenfolge der Items ändern")
-//    }
-
-    // Override to support conditional rearranging of the table view.
-//    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-//        // Return false if you do not want the item to be re-orderable.
-//        return true
-//    }
-    
-
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-
-        return true
+//        if editingStyle == .delete {
+//
+//            // !!! Delete the row from the data source
+//            tableView.deleteRows(at: [indexPath], with: .fade)
+//
+//        } else if editingStyle == .insert {
+//            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+//        }
     }
 
-    
-    override func setEditing(_ editing: Bool, animated: Bool) {
-
-        // Takes care of toggling the button's title.
-        super.setEditing(!isEditing, animated: true)
+    override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
         
-        // Toggle table view editing.
-        tableView.setEditing(!tableView.isEditing, animated: true)
+        print("Editing starts on indexPath: \(indexPath)")
     }
     
+    override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        
+        print("Editing ends on indexPath.row: \(indexPath?.row)")
+    }
+
+    
+    // edit button is automagic enabled so editing will can be configured with delegate
+    override func setEditing(_ editing: Bool, animated: Bool) {
+////
+////        // wird auch mit editing=false aufgerufen, nachdem eine swipe action abgebrochen wurde
+////
+        print("setEditing with: \(editing)")
+////
+////        // Takes care of toggling the button's title.
+        super.setEditing(editing, animated: true)
+        
+        if !editing {
+            print("reset selectedItems")
+            selectedItems = []
+        }
+        
+        navigationController?.setToolbarHidden(!editing, animated: true)
+        configureEditing(editing: editing)
+////
+////        // Toggle table view editing.
+////        tableView.setEditing(tableView.isEditing, animated: true)
+    }
+    
+    // ???
+    override func tableView(_ tableView: UITableView,
+                            editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        if tableView.isEditing {
+            return .delete
+        }
+        
+        return .none
+    }
     
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    // prevents fireing segue when table view is in editing
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         
-//        print("prepare for segue")
-        
-        switch segue.identifier {
-            case "ItemPresentSegue":
-                if let vc = segue.destination.children.first as? ItemViewController {
-                    
-                    print("View controller für Present gefunden")
-                    
-                    if let cell = sender as? ItemCell {
-                        print("currentItem übergeben:")
-                        print(cell.item ?? "Item in Cell not set")
-                        vc.currentItem = cell.item
-                    }
-                    print("show: ItemPresentSegue")
-                }
-            
-            case "ItemUpdateSegue":
-                if let vc = segue.destination as? ItemUpdateTableViewController {
-                    print("View controller für Update gefunden")
-//                if let vc = segue.destination.childViewControllers.first as? ItemUpdateTableViewController {
-                    vc.currentItem = nil
-                    print("new: ItemUpdateSegue")
-                }
-            default:
-                print("refactor this with enums!")
+        switch identifier {
+        case "ItemPresentSegue":
+            return !isEditing
+        default:
+            return true
         }
-
-//        print("prepare for segue ends")
     }
     
-    @IBAction func editItemList(_ sender: UIBarButtonItem) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        super.prepare(for: segue, sender: sender)
+        
+        switch segue.identifier {
+        case "ItemPresentSegue":
+            guard let vc = segue.destination.children.first as? ItemViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            
+            guard let cell = sender as? ItemCell else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+
+            guard let indexPath = tableView.indexPath(for: cell) else {
+                fatalError("The selected cell is not being displayed by the table")
+            }
+
+            let selectedIndex = Int(indexPath.row)
+            let selectedItem = PersistenceManager.sharedInstance.all()[selectedIndex] as Item
+
+            vc.currentItem = selectedItem
+
+        case "ItemUpdateSegue":
+            if let vc = segue.destination as? ItemUpdateTableViewController {
+                vc.currentItem = nil
+            }
+        
+        default:
+            print("refactor this with enums!")
+        }
     }
+    
     
     
 
@@ -184,8 +216,7 @@ class ItemsTableViewController: UITableViewController {
 
 extension ItemsTableViewController {
     
-    
-    func itemsCount() -> Int {
+    private func itemsCount() -> Int {
         if isFiltering() {
 
             return filteredItems?.count ?? 0
@@ -194,30 +225,21 @@ extension ItemsTableViewController {
         return PersistenceManager.sharedInstance.all().count
     }
     
+    // MARK: - table view data source delegates
+
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
+    
         let count = itemsCount()
+        
         if (count > 0) {
             self.tableView.restore()
         }
         else {
-            self.tableView.setEmptyMessage("My Message")
+            self.tableView.setEmptyMessage(NSLocalizedString("No items found.", comment: "Empty Table Message"))
         }
 
         return count;
-
-        
-        
-        
-//        if section == 0 {
-        
-//            if isFiltering() {
-//                return filteredItems?.count ?? 0
-//            }
-//
-//            return PersistenceManager.sharedInstance.all().count
-//        }
-//        return 0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -240,40 +262,68 @@ extension ItemsTableViewController {
         return cell
     }
     
-//    override func tableView (_ tableView: UITableView,
-//                    didSelectRowAt indexPath: IndexPath) {
-//
-//        print("IndexPath.Row:")
-//        print(indexPath.row)
+    override func tableView (_ tableView: UITableView,
+                    didSelectRowAt indexPath: IndexPath) {
+
+        if !isEditing {
+            return
+        }
+
+        print("didSelectRowAt \(indexPath)")
         
-        // let cell = tableView.cellForRow(at: indexPath) // as! ItemCell
-        // performSegue(withIdentifier: "ItemPresentSegue", sender: cell)
+        selectedItems.append(indexPath)
+        configureEditing(editing: true)
+    }
+
+    // manages items selected in table editing
+    override func tableView(_ tableView: UITableView,
+                            didDeselectRowAt indexPath: IndexPath) {
+        // entfernen
+
+        print("didDeselectRowAt")
         
-//        shouldPerformSegue(withIdentifier: "ItemPresentSegue", sender: cell)
-//    }
+        if !isEditing {
+            return
+        }
+
+        print("deselect row \(indexPath.row)")
+
+        selectedItems = selectedItems.filter { $0 != indexPath }
+        
+        configureEditing(editing: true)
+    }
+    
+    // configure a swipe menu
+    override func tableView(_ tableView: UITableView,
+                            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+        -> UISwipeActionsConfiguration? {
+
+        return swipeActionConfiguration(indexPath: indexPath)
+    }
 }
 
 
+// MARK: - UISearchResultsUpdating Delegate
 
 extension ItemsTableViewController: UISearchResultsUpdating {
-    // MARK: - UISearchResultsUpdating Delegate
+    
     func updateSearchResults(for searchController: UISearchController) {
         filter(searchController.searchBar.text!)
     }
     
     // MARK: - Private instance methods
     
-    func searchBarIsEmpty() -> Bool {
+    private func searchBarIsEmpty() -> Bool {
 
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
-    func isFiltering() -> Bool {
+    private func isFiltering() -> Bool {
 
         return searchController.isActive && !searchBarIsEmpty()
     }
     
-    func filter(_ searchText: String, scope: String = "All") {
+    private func filter(_ searchText: String, scope: String = "All") {
         
         PersistenceManager.sharedInstance.filter(searchText) { items in
             filteredItems = items
@@ -285,13 +335,71 @@ extension ItemsTableViewController: UISearchResultsUpdating {
 
 extension ItemsTableViewController {
     
+    func deleteItems() {
+        // delete items from selectedItems
+        print("Delete items: \(selectedItems)")
+        
+//        tableView.deleteRows(at: selectedItems, with: .automatic)
+    }
+    
+    func favoriteItems() {
+        // set or unset favorite status for selected items
+        print("set or unset favorite status for: \(selectedItems)")
+    }
+
+    func archiveItems() {
+        // move selected items to archive
+        print("move selected items to archive: \(selectedItems)")
+    }
+    
     func configureSearch() {
         
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.placeholder = "Search Items"
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
+
+    func configureEditing(editing: Bool) {
+        addAction.isEnabled = !editing
+
+        deleteActionItem.isEnabled = editing && (selectedItems.count > 0)
+        favoriteActionItem.isEnabled = editing && (selectedItems.count > 0)
+        archiveActionItem.isEnabled = editing && (selectedItems.count > 0)
+
+    }
+    
+    func swipeActionConfiguration(indexPath: IndexPath) -> UISwipeActionsConfiguration {
+        
+        // swipe action: delete
+        let deleteAction = UIContextualAction(style: .destructive, title: "delete", handler: {_,_,_ in
+            self.selectedItems.append(indexPath)
+            self.deleteItems()
+        })
+        deleteAction.backgroundColor = UIColor.red
+        deleteAction.image = UIImage(named: "trash")
+        
+        // swipe action: favorit
+        let favoriteAction = UIContextualAction(style: .normal,
+                                                title: "favorite",
+                                                handler: { _,_,_ in
+                                                    self.selectedItems.append(indexPath)
+                                                    self.favoriteItems()
+        })
+        favoriteAction.backgroundColor = UIColor.orange
+        favoriteAction.image = UIImage(named: "starfilled")
+        
+        let archiveAction = UIContextualAction(style: .normal,
+                                               title: "archive",
+                                               handler:{ _,_,_ in
+                                                self.selectedItems.append(indexPath)
+                                                self.archiveItems()
+        })
+        
+        return UISwipeActionsConfiguration(actions: [archiveAction, favoriteAction, deleteAction])
+    }
+
 }

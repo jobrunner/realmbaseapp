@@ -19,7 +19,6 @@ class ItemUpdateTableViewController: UITableViewController {
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
-    
     @IBOutlet weak var saveButton: UIBarButtonItem!
 
     @IBAction func cancelAction(_ sender: UIBarButtonItem) {
@@ -43,26 +42,31 @@ class ItemUpdateTableViewController: UITableViewController {
         }
         currentItem.name = nameTextField.text!
         
+        // geht auf die Bretter.
+        // Außerdem muss darüber informiert werden,
+        // dass sich ein Objekt geändert hat
         PersistenceManager.sharedInstance.add(object: currentItem)
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func deleteAction(_ sender: UIButton) {
+    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+        
+        // 1) nachfrage alert.
+        
         if let currentItem = currentItem {
+            // 2) wir müssen dafür sorgen, dass die TableView etc.
+            // mitbekommen, dass der Datensatz gelöscht wurde.
+            
             PersistenceManager.sharedInstance.delete(object: currentItem)
             
-            // besser wäre jetzt, in den ItemsTableViewController zurück zu springen...
             dismiss(animated: true, completion: nil)
         }
     }
 
-    @IBAction func nameTestFieldEditingChanged(_ sender: UITextField) {
-        print("nameTestFieldEditingChanged")
-    }
-    
-    @IBAction func nameTextFieldValueChanged(_ sender: UITextField) {
-        // enable save button
-        print("text field value changed")
+    // enables save button after change and text is not empty
+    @IBAction func nameTextFieldEditingChanged(_ sender: UITextField) {
+        
+        saveButton.isEnabled = sender.text?.count ?? 0 > 0
     }
     
     // MARK: Table view controller
@@ -71,20 +75,15 @@ class ItemUpdateTableViewController: UITableViewController {
         super.viewDidLoad()
 
         configureView(withItem: currentItem)
-
-        
-
-        
-//        print("setting up nameTextField.delegate")
-//        nameTextField.delegate? = self
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        configureView(withItem: currentItem)
+    }
+
+    
     
     // MARK: - Table view data source
 
@@ -180,10 +179,10 @@ extension ItemUpdateTableViewController {
             nameTextField.text = NSLocalizedString("New default name", comment: "TextFieldDefaults")
         }
 
-        saveButton.isEnabled = true
-        deleteButton.isEnabled = true
-
-        
-        nameTextField.placeholder = NSLocalizedString("Input name here", comment: "TextFieldPlaceholders")
+//        saveButton.isEnabled = true
+//        deleteButton.isEnabled = true
+//
+//
+//        nameTextField.placeholder = NSLocalizedString("Input name here", comment: "TextFieldPlaceholders")
     }
 }
