@@ -83,6 +83,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="editActionItem" destination="IEY-l0-MLR" id="xwT-FH-zt8"/>
                         <outlet property="idLabel" destination="aqI-3y-46k" id="pR9-Hq-JWC"/>
                         <outlet property="nameLabel" destination="dIG-Dc-pF4" id="v30-RT-X3O"/>
                     </connections>
@@ -200,10 +201,10 @@
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Test String" placeholder="Insert name here" textAlignment="natural" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" clearButtonMode="unlessEditing" translatesAutoresizingMaskIntoConstraints="NO" id="fcv-18-nIQ">
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Test String" placeholder="Insert name here" textAlignment="natural" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="fcv-18-nIQ">
                                                     <rect key="frame" x="20" y="25" width="284" height="21.5"/>
                                                     <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" spellCheckingType="yes" returnKeyType="done" enablesReturnKeyAutomatically="YES" textContentType="name"/>
                                                     <connections>
                                                         <action selector="nameTextFieldEditingChanged:" destination="967-NA-QsG" eventType="editingChanged" id="bUe-DD-lp3"/>
@@ -246,7 +247,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="lzR-y7-brR">
                             <connections>
-                                <action selector="saveActionItem:" destination="I3A-hj-hKt" id="iOi-ml-Ci1"/>
+                                <action selector="saveAction:" destination="967-NA-QsG" id="Qxm-Z3-Xhp"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -259,7 +260,6 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AAa-fe-TTT" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="I3A-hj-hKt" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2730" y="-263.02816901408448"/>
         </scene>
@@ -341,7 +341,7 @@
         <image name="star" width="26" height="26"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Uu5-T5-kiZ"/>
+        <segue reference="rug-kW-b28"/>
         <segue reference="Ofg-ld-wV1"/>
     </inferredMetricsTieBreakers>
 </document>

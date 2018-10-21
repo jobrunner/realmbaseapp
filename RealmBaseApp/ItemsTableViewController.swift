@@ -1,11 +1,3 @@
-//
-//  ItemsTableTableViewController.swift
-//  RealmBaseApp
-//
-//  Created by Jo Brunner on 15.09.18.
-//  Copyright © 2018 Mayflower GmbH. All rights reserved.
-//
-
 import UIKit
 import RealmSwift
 
@@ -14,42 +6,33 @@ class ItemsTableViewController: UITableViewController {
 
     let searchController = UISearchController(searchResultsController: nil)
 
+    var realm: Realm!
     var itemViewController: ItemViewController? = nil
-    
     var filteredItems: Results<Item>? = nil
     var selectedItems: [IndexPath] = []
+    var notificationToken: NotificationToken?
 
-    @IBOutlet weak var addAction: UIBarButtonItem!
-    @IBOutlet weak var deleteActionItem: UIBarButtonItem!
-    @IBOutlet weak var archiveActionItem: UIBarButtonItem!
-    @IBOutlet weak var favoriteActionItem: UIBarButtonItem!
-    
-    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
-        deleteItems()
-    }
-
-    @IBAction func archiveAction(_ sender: UIBarButtonItem) {
-        archiveItems()
-    }
-
-    @IBAction func favoriteAction(_ sender: UIBarButtonItem) {
-        favoriteItems()
+    deinit {
+        notificationToken?.invalidate()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        tableView.dataSource = self
-//        tableView.delegate = self
-        
+        realm = try! Realm()
+        let items = realm.objects(Item.self)
+        notificationToken = items.observe { [weak self] (changes) in
+            guard let tableView = self?.tableView else { return }
+            tableView.reloadData()
+        }
+
         // Uncomment the following line to preserve selection between presentations
         clearsSelectionOnViewWillAppear = true
 
         navigationItem.leftBarButtonItem = editButtonItem
         navigationController?.setToolbarHidden(true, animated: false)
         configureSearch()
-        
-        
+
 //        if let split = splitViewController {
 //            let controllers = split.viewControllers
 //            
@@ -78,7 +61,32 @@ class ItemsTableViewController: UITableViewController {
         
         tableView.reloadData()
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // needs reload data on orientation change because we want redraw the accessory elements
+        coordinator.animate(alongsideTransition: nil) { _ in
+            
+            // landscape mit splitview und nicht collapsed
+            // -> + weg, dafür edit rechts
+            // landscape ohne splitview (also immer collapsed)
+            // -> + lassen, edit auf die linke Seite
+            // portrait mit splitview
+            
+            if let svc = self.splitViewController, !svc.isCollapsed {
+                self.navigationItem.rightBarButtonItem = self.editButtonItem
+            } else {
+                self.navigationItem.leftBarButtonItem = self.editButtonItem
+            }
+            
+            
+            self.tableView.reloadData()
+        }
+    }
+
+    
     // MARK: - Table view data source
 
     /*
@@ -96,14 +104,6 @@ class ItemsTableViewController: UITableViewController {
     */
 
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
     // Data source: Override to support editing the table view.
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCell.EditingStyle,
@@ -120,14 +120,16 @@ class ItemsTableViewController: UITableViewController {
 //        }
     }
 
-    override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-        
-        print("Editing starts on indexPath: \(indexPath)")
+    override func tableView(_ tableView: UITableView,
+                            willBeginEditingRowAt indexPath: IndexPath) {
+
+        print("Editing begins on indexPath: \(String(describing: indexPath))")
     }
     
-    override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+    override func tableView(_ tableView: UITableView,
+                            didEndEditingRowAt indexPath: IndexPath?) {
         
-        print("Editing ends on indexPath.row: \(indexPath?.row)")
+        print("Editing ends on indexPath: \(String(describing: indexPath))")
     }
 
     
@@ -195,7 +197,8 @@ class ItemsTableViewController: UITableViewController {
             }
 
             let selectedIndex = Int(indexPath.row)
-            let selectedItem = PersistenceManager.sharedInstance.all()[selectedIndex] as Item
+            let selectedItems = try! Realm().objects(Item.self) as Results<Item>
+            let selectedItem = selectedItems[selectedIndex]
 
             vc.currentItem = selectedItem
 
@@ -208,9 +211,26 @@ class ItemsTableViewController: UITableViewController {
             print("refactor this with enums!")
         }
     }
+
+    // MARK: IB Outlets/Actions
     
+    @IBOutlet weak var addAction: UIBarButtonItem!
+    @IBOutlet weak var deleteActionItem: UIBarButtonItem!
+    @IBOutlet weak var archiveActionItem: UIBarButtonItem!
+    @IBOutlet weak var favoriteActionItem: UIBarButtonItem!
     
+    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+        deleteItems()
+    }
     
+    @IBAction func archiveAction(_ sender: UIBarButtonItem) {
+        archiveItems()
+    }
+    
+    @IBAction func favoriteAction(_ sender: UIBarButtonItem) {
+        favoriteItems()
+    }
+
 
 }
 
@@ -222,7 +242,7 @@ extension ItemsTableViewController {
             return filteredItems?.count ?? 0
         }
 
-        return PersistenceManager.sharedInstance.all().count
+        return realm.objects(Item.self).count
     }
     
     // MARK: - table view data source delegates
@@ -233,38 +253,45 @@ extension ItemsTableViewController {
         let count = itemsCount()
         
         if (count > 0) {
-            self.tableView.restore()
+            tableView.restore()
         }
         else {
-            self.tableView.setEmptyMessage(NSLocalizedString("No items found.", comment: "Empty Table Message"))
+            tableView.setEmptyMessage(NSLocalizedString("No items found.",
+                                                        comment: "Empty Table Message"))
         }
 
         return count;
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemCell",
+    override func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.reusableIdentifier,
                                                  for: indexPath) as! ItemCell
         let index = Int(indexPath.row)
 
-        var item: Item
-        
-        if isFiltering() {
-            item = filteredItems![index] as Item
-        }
-        else {
-            item = PersistenceManager.sharedInstance.all()[index] as Item
+        func item() -> Item {
+            if isFiltering() {
+                return filteredItems![index] as Item
+            }
+            else {
+                return realm.objects(Item.self)[index] as Item
+            }
         }
 
-        cell.item = item
+        // Hides disclosure indicator when in split view
+        if let svc = splitViewController, svc.isCollapsed {
+            cell.accessoryType = .disclosureIndicator
+        }
+        else {
+            cell.accessoryType = .none
+        }
+        cell.item = item()
         
         return cell
     }
     
     override func tableView (_ tableView: UITableView,
                     didSelectRowAt indexPath: IndexPath) {
-
         if !isEditing {
             return
         }
@@ -275,11 +302,12 @@ extension ItemsTableViewController {
         configureEditing(editing: true)
     }
 
+    
+    
     // manages items selected in table editing
     override func tableView(_ tableView: UITableView,
                             didDeselectRowAt indexPath: IndexPath) {
-        // entfernen
-
+        
         print("didDeselectRowAt")
         
         if !isEditing {
@@ -288,6 +316,7 @@ extension ItemsTableViewController {
 
         print("deselect row \(indexPath.row)")
 
+        // remove indexPath element from selected items
         selectedItems = selectedItems.filter { $0 != indexPath }
         
         configureEditing(editing: true)
@@ -324,10 +353,8 @@ extension ItemsTableViewController: UISearchResultsUpdating {
     }
     
     private func filter(_ searchText: String, scope: String = "All") {
-        
-        PersistenceManager.sharedInstance.filter(searchText) { items in
-            filteredItems = items
-        }
+        let predicate = NSPredicate(format: "%K CONTAINS[cd] %@", "name", searchText)
+        filteredItems = realm.objects(Item.self).filter(predicate)
 
         tableView.reloadData()
     }

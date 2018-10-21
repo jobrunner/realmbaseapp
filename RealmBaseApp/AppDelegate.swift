@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate { // }, UISplitViewControllerDelegate {
@@ -17,7 +16,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate { // }, UISplitViewControl
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
+        // Tell Realm to use this new configuration object for the default Realm
+        let defaultRealm = DefaultRealm()
+        defaultRealm.migrate()
+        
+        print("Local Realm:")
+        print(defaultRealm.fileUrl ?? "no file url provided :-(")
 
         return true
     }
@@ -43,6 +47,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate { // }, UISplitViewControl
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
 
 }

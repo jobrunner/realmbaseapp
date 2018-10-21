@@ -1,89 +1,33 @@
-//
-//  ItemUpdateTableViewController.swift
-//  RealmBaseApp
-//
-//  Created by Jo Brunner on 15.09.18.
-//  Copyright © 2018 Mayflower GmbH. All rights reserved.
-//
-// nBV-w2-9yn
-// 1nl-5f-zsg
-// lzR-y7-brR
 import UIKit
+import RealmSwift
 
 class ItemUpdateTableViewController: UITableViewController {
 
     var currentItem: Item?
+    var realm: Realm!
+    var notificationToken: NotificationToken?
+    
+    
+    // MARK: Table view controller overrides
 
-    // MARK: interface builder
-    
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var cancelButton: UIBarButtonItem!
-    @IBOutlet weak var deleteButton: UIBarButtonItem!
-    @IBOutlet weak var saveButton: UIBarButtonItem!
-
-    @IBAction func cancelAction(_ sender: UIBarButtonItem) {
-        dismiss(animated: true, completion: nil)
-    }
-    
-    
-    @IBAction func saveAction(_ sender: Any) {
-        
-        if currentItem == nil {
-            currentItem = Item()
-        }
-        
-        guard let currentItem = currentItem
-            else {
-                return ;
-        }
-            
-        if currentItem.id.count == 0 {
-            currentItem.id = UUID().uuidString
-        }
-        currentItem.name = nameTextField.text!
-        
-        // geht auf die Bretter.
-        // Außerdem muss darüber informiert werden,
-        // dass sich ein Objekt geändert hat
-        PersistenceManager.sharedInstance.add(object: currentItem)
-        dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
-        
-        // 1) nachfrage alert.
-        
-        if let currentItem = currentItem {
-            // 2) wir müssen dafür sorgen, dass die TableView etc.
-            // mitbekommen, dass der Datensatz gelöscht wurde.
-            
-            PersistenceManager.sharedInstance.delete(object: currentItem)
-            
-            dismiss(animated: true, completion: nil)
-        }
-    }
-
-    // enables save button after change and text is not empty
-    @IBAction func nameTextFieldEditingChanged(_ sender: UITextField) {
-        
-        saveButton.isEnabled = sender.text?.count ?? 0 > 0
-    }
-    
-    // MARK: Table view controller
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        realm = try! Realm()
+        
         configureView(withItem: currentItem)
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         configureView(withItem: currentItem)
     }
 
+    deinit {
+        notificationToken?.invalidate()
+    }
     
+
     
     // MARK: - Table view data source
 
@@ -151,6 +95,84 @@ class ItemUpdateTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+
+    // MARK: IB Outlets/Actions
+    
+    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var cancelButton: UIBarButtonItem!
+    @IBOutlet weak var deleteButton: UIBarButtonItem!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
+    @IBAction func cancelAction(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    @IBAction func saveAction(_ sender: Any) {
+        
+        if currentItem == nil {
+            currentItem = Item()
+        }
+        
+        guard let currentItem = currentItem
+            else {
+                return ;
+        }
+
+        try! realm.write {
+            let tag = Tag();
+            tag.name = "Systemtheorie"
+            realm.add(tag, update: true)
+            currentItem.name = nameTextField.text!
+            currentItem.tags.append(tag)
+            
+//            if currentItem.id.count == 0 {
+//                currentItem.id = UUID().uuidString
+            realm.add(currentItem, update: true)
+//                print("Added new object")
+//            }
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+        guard let currentItem = currentItem,
+            !currentItem.isInvalidated else {
+
+            return
+        }
+        
+        let actionSheet = UIAlertController(title: NSLocalizedString("Remove item?",
+                                                                     comment: "Remove Item Alert Title"),
+                                            message: NSLocalizedString("You will lost the item.",
+                                                                       comment: "Remove Item Alert Message"),
+                                            preferredStyle: .actionSheet)
+        
+
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "OK Action"),
+                                            style: .destructive,
+                                            handler: { action in
+                                                self.dismiss(animated: true, completion: {
+                                                    try! self.realm.write {
+                                                        self.realm.delete(currentItem)
+                                                    }
+                                                })
+        }))
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("Cancel",
+                                                                     comment: "Cancel Action"),
+                                            style: .cancel,
+                                            handler: nil))
+
+        present(actionSheet, animated: true)
+    }
+    
+    
+    // enables save button after change and text is not empty
+    @IBAction func nameTextFieldEditingChanged(_ sender: UITextField) {
+        
+        saveButton.isEnabled = sender.text?.count ?? 0 > 0
+    }
 
 }
 
