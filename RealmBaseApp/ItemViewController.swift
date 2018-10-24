@@ -29,7 +29,6 @@ class ItemViewController: UITableViewController {
         notificationToken = item?.observe { change in
             
             self.configureView(withItem: self.currentItem)
-
             
             switch change {
             case .change(let properties):

@@ -69,21 +69,4 @@ extension MainSplitViewController: UISplitViewControllerDelegate {
         }
         return false
     }
-
-//    override var traitCollection: UITraitCollection {
-//
-//        let horizontal = UITraitCollection(horizontalSizeClass: .compact)
-//        let vertical = UITraitCollection(verticalSizeClass: .compact)
-//        return UITraitCollection.init(traitsFrom: [horizontal, vertical])
-//
-//        
-//
-////        if UI_USER_INTERFACE_IDIOM() == .pad {
-////            return super.traitCollection
-////        } else {
-////            let horizontal = UITraitCollection(horizontalSizeClass: .compact)
-////            let vertical = UITraitCollection(verticalSizeClass: super.traitCollection.verticalSizeClass)
-////            return UITraitCollection.init(traitsFrom: [horizontal, vertical])
-////        }
-//    }
 }

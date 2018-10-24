@@ -40,21 +40,6 @@ class ItemsTableViewController: UITableViewController {
 //                as! UINavigationController).topViewController
 //                as? ItemViewController
 //        }
-
-//        // nur nach der Installation:
-//        PersistenceManager.sharedInstance.delete()
-//
-//        // Adds some items
-//        let item1 = Item()
-//        item1.id = UUID().uuidString
-//        item1.name = "Example Name 1"
-//        PersistenceManager.sharedInstance.add(object: item1)
-//
-//        let item2 = Item()
-//        item2.id = UUID().uuidString
-//        item2.name = "Example Name 2"
-//        PersistenceManager.sharedInstance.add(object: item2)
-
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -249,7 +234,6 @@ extension ItemsTableViewController {
 
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-    
         let count = itemsCount()
         
         if (count > 0) {
