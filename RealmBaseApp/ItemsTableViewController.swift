@@ -16,6 +16,7 @@ class ItemsTableViewController: UITableViewController {
         notificationToken?.invalidate()
     }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,7 +32,6 @@ class ItemsTableViewController: UITableViewController {
 
                 return
             }
-
             tableView.reloadData()
         }
 
@@ -77,21 +77,20 @@ class ItemsTableViewController: UITableViewController {
                 self.navigationItem.leftBarButtonItem = self.editButtonItem
             }
             
-            
             self.tableView.reloadData()
         }
     }
 
     
     // MARK: - Table view data source
-
     
 
     // Permits the data source to exclude individual rows from being treated as editable.
     // Use this if certain cells must not be deleted.
     override func tableView(_ tableView: UITableView,
                             canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+
+        return tableViewSection(for: indexPath.section).editable()
     }
 
     /*
@@ -107,13 +106,6 @@ class ItemsTableViewController: UITableViewController {
         return .none
     }
 
-    // Prepares the edit or delete action. After that swipe menu will be displayed
-//    override func tableView(_ tableView: UITableView,
-//                            willBeginEditingRowAt indexPath: IndexPath) {
-//
-//        print("Editing begins on indexPath: \(String(describing: indexPath))")
-//    }
-    
     // Implemented to allow edit or delete data source entry for row at indexPath
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCell.EditingStyle,
@@ -123,6 +115,7 @@ class ItemsTableViewController: UITableViewController {
             // Send delete signal to the table view to direct it to adjust its presentation.
             tableView.deleteRows(at: [indexPath],
                                  with: UITableView.RowAnimation.fade)
+        
         case .insert:
             // Should avoid complete refresh of the table view and signals inserts only for indexPath
             print("insert signal in commit editing forRowAt")
@@ -138,11 +131,6 @@ class ItemsTableViewController: UITableViewController {
         
         print("Editing ends on indexPath: \(String(describing: indexPath))")
     }
-
-    //
-
-    
-    
     
     // edit button is automagic enabled so editing will can be configured with delegate
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -390,6 +378,7 @@ extension ItemsTableViewController: UISearchResultsUpdating {
 extension ItemsTableViewController {
 
     private func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
+        
         let indices: [Int] = indexPaths.map { indexPath in
             return Int(indexPath.row)
         }
@@ -493,5 +482,5 @@ extension ItemsTableViewController {
         
         return UISwipeActionsConfiguration(actions: [favoriteAction, deleteAction])
     }
-
+    
 }
