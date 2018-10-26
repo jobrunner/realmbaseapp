@@ -140,26 +140,27 @@ class ItemUpdateTableViewController: UITableViewController {
         }
         
         let actionSheet = UIAlertController(title: NSLocalizedString("Remove item?",
-                                                                     comment: "Remove Item Alert Title"),
+                                                                     comment: "Action Sheet Remove Item Alert Title"),
                                             message: NSLocalizedString("You will lost the item.",
-                                                                       comment: "Remove Item Alert Message"),
+                                                                       comment: "Action Sheet Remove Item Alert Message"),
                                             preferredStyle: .actionSheet)
+        let actionOk = UIAlertAction(title: NSLocalizedString("OK",
+                                                              comment: "Action Sheet Ok"),
+                                     style: .destructive,
+                                     handler: { action in
+                                        self.dismiss(animated: true, completion: {
+                                            try! self.realm.write {
+                                                self.realm.delete(currentItem)
+                                            }
+                                        })
+        })
+        let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel",
+                                                                  comment: "Action Sheet Cancel"),
+                                         style: .cancel,
+                                         handler: nil)
+        actionSheet.addAction(actionOk)
+        actionSheet.addAction(actionCancel)
         
-
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "OK Action"),
-                                            style: .destructive,
-                                            handler: { action in
-                                                self.dismiss(animated: true, completion: {
-                                                    try! self.realm.write {
-                                                        self.realm.delete(currentItem)
-                                                    }
-                                                })
-        }))
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("Cancel",
-                                                                     comment: "Cancel Action"),
-                                            style: .cancel,
-                                            handler: nil))
-
         present(actionSheet, animated: true)
     }
     
