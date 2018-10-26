@@ -381,6 +381,11 @@ extension ItemsTableViewController: UISearchResultsUpdating {
     }
     
     private func filter(_ searchText: String, scope: String = "All") {
+        
+        // Item um einen Enum erweitern, der ein defaultSearchPredicate liefert.
+        // %K ist dann nicht so gut. Oder aber [predicate, k]
+        // Ebenso muss hier ein defaultSort definiert werden.
+        
         let predicate = NSPredicate(format: "%K CONTAINS[cd] %@", "name", searchText)
         filteredItems = realm.objects(Item.self).filter(predicate)
 
