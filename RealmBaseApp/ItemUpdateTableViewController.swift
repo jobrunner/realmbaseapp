@@ -173,18 +173,6 @@ class ItemUpdateTableViewController: UITableViewController {
 
 }
 
-
-//extension ItemUpdateTableViewController: UITextFieldDelegate {
-//
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//
-//        // enable save button
-//        print("text field did end editing")
-//    }
-//
-//
-//}
-
 extension ItemUpdateTableViewController {
     
     func configureView(withItem item: Item?) {
