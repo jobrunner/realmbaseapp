@@ -326,10 +326,9 @@ extension ItemsTableViewController {
     override func tableView (_ tableView: UITableView,
                     didSelectRowAt indexPath: IndexPath) {
         if !isEditing {
+
             return
         }
-
-        print("didSelectRowAt \(indexPath)")
         
         selectedItems.append(indexPath)
         configureEditing(editing: true)
@@ -338,14 +337,10 @@ extension ItemsTableViewController {
     // manages items selected in table editing
     override func tableView(_ tableView: UITableView,
                             didDeselectRowAt indexPath: IndexPath) {
-        
-        print("didDeselectRowAt")
-        
         if !isEditing {
+
             return
         }
-
-        print("deselect row \(indexPath.row)")
 
         // remove indexPath element from selected items
         selectedItems = selectedItems.filter { $0 != indexPath }
