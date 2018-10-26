@@ -2,8 +2,34 @@ import UIKit
 import RealmSwift
 
 
-class ItemsTableViewController: UITableViewController {
 
+
+class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSectionHandler {
+
+    enum TableViewSection: Int {
+        case favorites = 0
+        case listItems = 1
+        case archivedItems = 2
+        
+        func count() -> Int {
+            switch self {
+            case .favorites:
+                return 0
+            case .listItems:
+                return 0
+            case .archivedItems:
+                return 0
+            }
+        }
+        
+        func editable() -> Bool {
+            if self == .archivedItems {
+                return false
+            }
+            return true
+        }
+    }
+    
     let searchController = UISearchController(searchResultsController: nil)
 
     var realm: Realm!
@@ -161,12 +187,15 @@ class ItemsTableViewController: UITableViewController {
         }
     }
     
+    enum SegueIdentifier: String {
+        case itemPresentSegue = "itemPresentSegue"
+        case itemAddSegue = "itemAddSegue"
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        super.prepare(for: segue, sender: sender)
-        
-        switch segue.identifier {
-        case "ItemPresentSegue":
+        switch segueIdentifier(for: segue) {
+        case .itemPresentSegue:
             guard let vc = segue.destination.children.first as? ItemViewController else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
@@ -185,18 +214,10 @@ class ItemsTableViewController: UITableViewController {
 
             vc.currentItem = selectedItem
 
-        case "ItemAddSegue":
+        case .itemAddSegue:
             if let vc = segue.destination as? ItemUpdateTableViewController {
                 vc.currentItem = nil
             }
-
-//        case "ItemUpdateSegue":
-//            if let vc = segue.destination as? ItemUpdateTableViewController {
-//                vc.currentItem = nil
-//            }
-        
-        default:
-            print("refactor this with enums!")
         }
     }
 
@@ -316,8 +337,6 @@ extension ItemsTableViewController {
         selectedItems.append(indexPath)
         configureEditing(editing: true)
     }
-
-    
     
     // manages items selected in table editing
     override func tableView(_ tableView: UITableView,
