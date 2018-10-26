@@ -446,35 +446,20 @@ extension ItemsTableViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Items"
+        searchController.searchBar.placeholder = NSLocalizedString("Search Items", comment: "Item Search Bar Placeholder")
         navigationItem.searchController = searchController
         definesPresentationContext = true
         searchController.searchBar.tintColor = UIColor.white
         let attrs = NSAttributedString.Key.foregroundColor
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
             .defaultTextAttributes = [attrs: UIColor.white]
-
     }
 
     func configureEditing(editing: Bool) {
         
         deleteActionItem.isEnabled = editing && (selectedItems.count > 0)
-//        favoriteActionItem.isEnabled = editing && (selectedItems.count > 0)
-
-//        if editing {
-//            deleteItems()
-//        }
-        
-//        editActionItem.isEnabled = !editing
+        actionMoreItem.isEnabled = editing && (selectedItems.count > 0)
         addActionItem.isEnabled = !editing
-        
-//        if editing {
-//            editActionItem.title = "Done"
-//        }
-//        else {
-//            editActionItem.title = "Edit"
-//        }
-
     }
     
     func swipeActionConfiguration(indexPath: IndexPath) -> UISwipeActionsConfiguration {
