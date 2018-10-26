@@ -4,4 +4,6 @@ platform :ios, '10.0'
 target 'RealmBaseApp' do
   use_frameworks!
   pod 'RealmSwift'
+  pod 'IceCream'
 end
+

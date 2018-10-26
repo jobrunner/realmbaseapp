@@ -238,7 +238,9 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
 
         let actionFavorite = UIAlertAction(title: NSLocalizedString("Mark as favorite", comment: "Action Sheet Favorites"),
                                            style: .default,
-                                           handler: nil)
+                                           handler: { _ in
+                                                self.favoriteItems()
+        })
         let actionArchive = UIAlertAction(title: NSLocalizedString("Move to archive", comment: "Action Sheet Archive"),
                                            style: .default,
                                            handler: nil)
@@ -428,8 +430,26 @@ extension ItemsTableViewController {
     }
     
     func favoriteItems() {
-        // set or unset favorite status for selected items
-        print("set or unset favorite status for: \(selectedItems)")
+
+        guard let resultList = currentResultList() else {
+            
+            return
+        }
+
+        // alle items aus der favoriten-liste werden entfavorisiert und landen dann wieder in der section .listItems.
+        // alle items aus der normalen Liste werden favorisiert und landen dann in der section: .favorite
+        let objects = filtered(objects: resultList, filter: selectedItems)
+        
+        try! realm.write {
+            for object in objects {
+                object.favorite = true
+            }
+        }
+        tableView.reloadRows(at: selectedItems, with: .top)
+        
+        // reset indexPaths for selected items
+        selectedItems = []
+        setEditing(false, animated: true)
     }
 
     func configureSearch() {
