@@ -2,8 +2,6 @@ import UIKit
 import RealmSwift
 
 
-
-
 class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSectionHandler {
 
     enum TableViewSection: Int {
@@ -42,7 +40,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         notificationToken?.invalidate()
     }
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
