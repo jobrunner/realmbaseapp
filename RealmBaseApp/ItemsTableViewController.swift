@@ -216,13 +216,40 @@ class ItemsTableViewController: UITableViewController {
     
     @IBOutlet weak var deleteActionItem: UIBarButtonItem!
     @IBOutlet weak var addActionItem: UIBarButtonItem!
-
+    @IBOutlet weak var actionMoreItem: UIBarButtonItem!
+    
     // Batch action: delete selectedItems
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
 
         deleteItems()
     }
 
+    @IBAction func moreAction(_ sender: UIBarButtonItem) {
+        
+        let actionSheet = UIAlertController(title: nil,
+                                            message: nil,
+                                            preferredStyle: .actionSheet)
+
+        let actionFavorite = UIAlertAction(title: NSLocalizedString("Mark as favorite", comment: "Action Sheet Favorites"),
+                                           style: .default,
+                                           handler: nil)
+        let actionArchive = UIAlertAction(title: NSLocalizedString("Move to archive", comment: "Action Sheet Archive"),
+                                           style: .default,
+                                           handler: nil)
+
+        actionFavorite.isEnabled = isEditing && selectedItems.count > 0
+        let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel",
+                                                                  comment: "Action Sheet Cancel"),
+                                         style: .cancel,
+                                         handler: nil)
+
+        actionSheet.addAction(actionFavorite)
+        actionSheet.addAction(actionArchive)
+        actionSheet.addAction(actionCancel)
+
+        actionSheet.modalPresentationStyle = .popover
+        present(actionSheet, animated: true)
+    }
 }
 
 extension ItemsTableViewController {
