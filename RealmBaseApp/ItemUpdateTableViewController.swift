@@ -120,17 +120,13 @@ class ItemUpdateTableViewController: UITableViewController {
         }
 
         try! realm.write {
-            let tag = Tag();
-            tag.name = "Systemtheorie"
-            realm.add(tag, update: true)
+//            let tag = Tag();
+//            tag.name = "Systemtheorie"
+//            realm.add(tag, update: true)
             currentItem.name = nameTextField.text!
-            currentItem.tags.append(tag)
+//            currentItem.tags.append(tag)
             
-//            if currentItem.id.count == 0 {
-//                currentItem.id = UUID().uuidString
             realm.add(currentItem, update: true)
-//                print("Added new object")
-//            }
         }
         
         dismiss(animated: true, completion: nil)

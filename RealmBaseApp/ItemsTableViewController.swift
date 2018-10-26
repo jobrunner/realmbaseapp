@@ -19,18 +19,24 @@ class ItemsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // create realm instance
         realm = try! Realm()
+        
+        // fetch collection instance of Items
         let items = realm.objects(Item.self)
+        
+        // Oberves changes from Items and updates the view table
         notificationToken = items.observe { [weak self] (changes) in
-            guard let tableView = self?.tableView else { return }
+            guard let tableView = self?.tableView else {
+
+                return
+            }
+
             tableView.reloadData()
         }
 
-        // Uncomment the following line to preserve selection between presentations
-        clearsSelectionOnViewWillAppear = true
-
         navigationItem.leftBarButtonItem = editButtonItem
-        navigationController?.setToolbarHidden(true, animated: false)
+        clearsSelectionOnViewWillAppear = false
         configureSearch()
 
 //        if let split = splitViewController {
@@ -43,7 +49,8 @@ class ItemsTableViewController: UITableViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        
+        super.viewDidAppear(animated)
+
         tableView.reloadData()
     }
     
@@ -59,10 +66,14 @@ class ItemsTableViewController: UITableViewController {
             // landscape ohne splitview (also immer collapsed)
             // -> + lassen, edit auf die linke Seite
             // portrait mit splitview
+
+            // ??? -> ich will im Splitview nicht zwei Edit-Buttons sehen. Auch wenn das für die Liste UND das Item ist...
             
             if let svc = self.splitViewController, !svc.isCollapsed {
+                // landscape mit offenem Splitview
                 self.navigationItem.rightBarButtonItem = self.editButtonItem
             } else {
+                // portaint mit geschlossenem Splitview
                 self.navigationItem.leftBarButtonItem = self.editButtonItem
             }
             
@@ -74,80 +85,79 @@ class ItemsTableViewController: UITableViewController {
     
     // MARK: - Table view data source
 
-    /*
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+    
+
+    // Permits the data source to exclude individual rows from being treated as editable.
+    // Use this if certain cells must not be deleted.
+    override func tableView(_ tableView: UITableView,
+                            canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
+
+    /*
+        Delegate called when signal Edit or Delete
      */
-
-    /*
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+    override func tableView(_ tableView: UITableView,
+                            editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        // display only delete control in edit mode. Else display noting special.
+        if tableView.isEditing {
+            return .delete
+        }
+        
+        return .none
     }
-    */
 
-
-    // Data source: Override to support editing the table view.
+    // Prepares the edit or delete action. After that swipe menu will be displayed
+//    override func tableView(_ tableView: UITableView,
+//                            willBeginEditingRowAt indexPath: IndexPath) {
+//
+//        print("Editing begins on indexPath: \(String(describing: indexPath))")
+//    }
+    
+    // Implemented to allow edit or delete data source entry for row at indexPath
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCell.EditingStyle,
                             forRowAt indexPath: IndexPath) {
-        print("commit Editing starts on indexPath: \(indexPath) editingStyle: \(editingStyle)")
-
-//        if editingStyle == .delete {
-//
-//            // !!! Delete the row from the data source
-//            tableView.deleteRows(at: [indexPath], with: .fade)
-//
-//        } else if editingStyle == .insert {
-//            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-//        }
+        switch editingStyle {
+        case .delete:
+            // Send delete signal to the table view to direct it to adjust its presentation.
+            tableView.deleteRows(at: [indexPath],
+                                 with: UITableView.RowAnimation.fade)
+        case .insert:
+            // Should avoid complete refresh of the table view and signals inserts only for indexPath
+            print("insert signal in commit editing forRowAt")
+        
+        case .none:
+            print("Do nothing in commit editing forRowAt")
+        }
     }
 
-    override func tableView(_ tableView: UITableView,
-                            willBeginEditingRowAt indexPath: IndexPath) {
 
-        print("Editing begins on indexPath: \(String(describing: indexPath))")
-    }
-    
     override func tableView(_ tableView: UITableView,
                             didEndEditingRowAt indexPath: IndexPath?) {
         
         print("Editing ends on indexPath: \(String(describing: indexPath))")
     }
 
+    //
+
+    
+    
     
     // edit button is automagic enabled so editing will can be configured with delegate
     override func setEditing(_ editing: Bool, animated: Bool) {
-////
-////        // wird auch mit editing=false aufgerufen, nachdem eine swipe action abgebrochen wurde
-////
-        print("setEditing with: \(editing)")
-////
-////        // Takes care of toggling the button's title.
         super.setEditing(editing, animated: true)
-        
         if !editing {
-            print("reset selectedItems")
             selectedItems = []
         }
-        
-        navigationController?.setToolbarHidden(!editing, animated: true)
         configureEditing(editing: editing)
-////
-////        // Toggle table view editing.
-////        tableView.setEditing(tableView.isEditing, animated: true)
     }
     
-    // ???
+    // Sets Header unvisible (it's a common hack for grouped cells)
     override func tableView(_ tableView: UITableView,
-                            editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        if tableView.isEditing {
-            return .delete
-        }
+                            heightForHeaderInSection section: Int) -> CGFloat {
         
-        return .none
+        return CGFloat(0.001)
     }
     
     // MARK: - Navigation
@@ -187,10 +197,15 @@ class ItemsTableViewController: UITableViewController {
 
             vc.currentItem = selectedItem
 
-        case "ItemUpdateSegue":
+        case "ItemAddSegue":
             if let vc = segue.destination as? ItemUpdateTableViewController {
                 vc.currentItem = nil
             }
+
+//        case "ItemUpdateSegue":
+//            if let vc = segue.destination as? ItemUpdateTableViewController {
+//                vc.currentItem = nil
+//            }
         
         default:
             print("refactor this with enums!")
@@ -199,42 +214,39 @@ class ItemsTableViewController: UITableViewController {
 
     // MARK: IB Outlets/Actions
     
-    @IBOutlet weak var addAction: UIBarButtonItem!
     @IBOutlet weak var deleteActionItem: UIBarButtonItem!
-    @IBOutlet weak var archiveActionItem: UIBarButtonItem!
-    @IBOutlet weak var favoriteActionItem: UIBarButtonItem!
-    
+    @IBOutlet weak var addActionItem: UIBarButtonItem!
+
+    // Batch action: delete selectedItems
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+
         deleteItems()
     }
-    
-    @IBAction func archiveAction(_ sender: UIBarButtonItem) {
-        archiveItems()
-    }
-    
-    @IBAction func favoriteAction(_ sender: UIBarButtonItem) {
-        favoriteItems()
-    }
-
 
 }
 
 extension ItemsTableViewController {
     
-    private func itemsCount() -> Int {
-        if isFiltering() {
+    private func resultListCount() -> Int {
 
-            return filteredItems?.count ?? 0
+        guard let resultList = currentResultList() else {
+            return 0
         }
-
-        return realm.objects(Item.self).count
+        return resultList.count
     }
     
     // MARK: - table view data source delegates
 
+    override func numberOfSections(in tableView: UITableView) -> Int {
+
+        return 1
+    }
+    
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        let count = itemsCount()
+        if section != 0 { return 0 }
+        
+        let count = resultListCount()
         
         if (count > 0) {
             tableView.restore()
@@ -251,9 +263,9 @@ extension ItemsTableViewController {
                             cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.reusableIdentifier,
                                                  for: indexPath) as! ItemCell
-        let index = Int(indexPath.row)
 
-        func item() -> Item {
+        func item(for indexPath: IndexPath) -> Item {
+            let index = Int(indexPath.row)
             if isFiltering() {
                 return filteredItems![index] as Item
             }
@@ -262,14 +274,18 @@ extension ItemsTableViewController {
             }
         }
 
-        // Hides disclosure indicator when in split view
-        if let svc = splitViewController, svc.isCollapsed {
-            cell.accessoryType = .disclosureIndicator
+        // configure (hides) disclosure indicator when device is in collapsted in split view
+        func configureAccessoryType(for cell: UITableViewCell ) {
+            if let svc = splitViewController, svc.isCollapsed {
+                cell.accessoryType = .disclosureIndicator
+            }
+            else {
+                cell.accessoryType = .none
+            }
         }
-        else {
-            cell.accessoryType = .none
-        }
-        cell.item = item()
+        
+        configureAccessoryType(for: cell)
+        cell.item = item(for: indexPath)
         
         return cell
     }
@@ -345,12 +361,43 @@ extension ItemsTableViewController: UISearchResultsUpdating {
 }
 
 extension ItemsTableViewController {
+
+    private func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
+        let indices: [Int] = indexPaths.map { indexPath in
+            return Int(indexPath.row)
+        }
+        return indices.map { index in
+            return objects[index]
+        }
+    }
+
+    func currentResultList() -> Results<Item>? {
+        if isFiltering() {
+            return filteredItems
+        }
+        else {
+            return realm.objects(Item.self)
+        }
+    }
     
     func deleteItems() {
-        // delete items from selectedItems
-        print("Delete items: \(selectedItems)")
+
+        guard let resultList = currentResultList() else {
+            return
+        }
+
+        let objects = filtered(objects: resultList, filter: selectedItems)
         
-//        tableView.deleteRows(at: selectedItems, with: .automatic)
+        try! realm.write {
+            self.realm.delete(objects)
+            self.tableView.beginUpdates()
+            self.tableView.deleteRows(at: self.selectedItems, with: .automatic)
+            self.tableView.endUpdates()
+        }
+        
+        // reset indexPaths for selected items
+        selectedItems = []
+        setEditing(false, animated: true)
     }
     
     func favoriteItems() {
@@ -358,11 +405,6 @@ extension ItemsTableViewController {
         print("set or unset favorite status for: \(selectedItems)")
     }
 
-    func archiveItems() {
-        // move selected items to archive
-        print("move selected items to archive: \(selectedItems)")
-    }
-    
     func configureSearch() {
         
         // Setup the Search Controller
@@ -372,14 +414,31 @@ extension ItemsTableViewController {
         searchController.searchBar.placeholder = "Search Items"
         navigationItem.searchController = searchController
         definesPresentationContext = true
+        searchController.searchBar.tintColor = UIColor.white
+        let attrs = NSAttributedString.Key.foregroundColor
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+            .defaultTextAttributes = [attrs: UIColor.white]
+
     }
 
     func configureEditing(editing: Bool) {
-        addAction.isEnabled = !editing
-
+        
         deleteActionItem.isEnabled = editing && (selectedItems.count > 0)
-        favoriteActionItem.isEnabled = editing && (selectedItems.count > 0)
-        archiveActionItem.isEnabled = editing && (selectedItems.count > 0)
+//        favoriteActionItem.isEnabled = editing && (selectedItems.count > 0)
+
+//        if editing {
+//            deleteItems()
+//        }
+        
+//        editActionItem.isEnabled = !editing
+        addActionItem.isEnabled = !editing
+        
+//        if editing {
+//            editActionItem.title = "Done"
+//        }
+//        else {
+//            editActionItem.title = "Edit"
+//        }
 
     }
     
@@ -388,6 +447,8 @@ extension ItemsTableViewController {
         // swipe action: delete
         let deleteAction = UIContextualAction(style: .destructive, title: "delete", handler: {_,_,_ in
             self.selectedItems.append(indexPath)
+            self.setEditing(true, animated: true)
+            
             self.deleteItems()
         })
         deleteAction.backgroundColor = UIColor.red
@@ -403,14 +464,7 @@ extension ItemsTableViewController {
         favoriteAction.backgroundColor = UIColor.orange
         favoriteAction.image = UIImage(named: "starfilled")
         
-        let archiveAction = UIContextualAction(style: .normal,
-                                               title: "archive",
-                                               handler:{ _,_,_ in
-                                                self.selectedItems.append(indexPath)
-                                                self.archiveItems()
-        })
-        
-        return UISwipeActionsConfiguration(actions: [archiveAction, favoriteAction, deleteAction])
+        return UISwipeActionsConfiguration(actions: [favoriteAction, deleteAction])
     }
 
 }

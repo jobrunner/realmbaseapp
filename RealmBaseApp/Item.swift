@@ -6,6 +6,7 @@ final class Item: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var favorite = false
     let tags = List<Tag>()
+    
     override static func primaryKey() -> String? {
         return "id"
     }
