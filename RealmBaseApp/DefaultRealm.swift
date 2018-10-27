@@ -6,7 +6,7 @@ import RealmSwift
 
 struct DefaultRealm {
 
-    let currentVersion: UInt64 = 3
+    let currentVersion: UInt64 = 5
 
     public var fileUrl: URL? {
         get {

@@ -107,7 +107,6 @@ class ItemUpdateTableViewController: UITableViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    
     @IBAction func saveAction(_ sender: Any) {
         
         if currentItem == nil {
@@ -116,15 +115,19 @@ class ItemUpdateTableViewController: UITableViewController {
         
         guard let currentItem = currentItem
             else {
-                return ;
+                fatalError("Could not save Item")
         }
 
         try! realm.write {
-//            let tag = Tag();
-//            tag.name = "Systemtheorie"
-//            realm.add(tag, update: true)
+
+            if let maxSortOrder =  realm.objects(Item.self).max(ofProperty: "sortOrder") as Int? {
+                currentItem.sortOrder = maxSortOrder + 1
+            }
+
+            let tag = Tag(tag: "Dienstleister");
+            realm.add(tag, update: true)
             currentItem.name = nameTextField.text!
-//            currentItem.tags.append(tag)
+            currentItem.tags.append(tag)
             
             realm.add(currentItem, update: true)
         }
@@ -188,8 +191,6 @@ extension ItemUpdateTableViewController {
 
 //        saveButton.isEnabled = true
 //        deleteButton.isEnabled = true
-//
-//
 //        nameTextField.placeholder = NSLocalizedString("Input name here", comment: "TextFieldPlaceholders")
     }
 }

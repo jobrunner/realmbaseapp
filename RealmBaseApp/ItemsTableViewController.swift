@@ -2,8 +2,9 @@ import UIKit
 import RealmSwift
 
 
-class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSectionHandler {
+class ItemsTableViewController: UITableViewController, UISearchBarDelegate, SegueHandler, TableViewSectionHandler {
 
+    // tbd.
     enum TableViewSection: Int {
         case favorites = 0
         case listItems = 1
@@ -27,14 +28,14 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
             return true
         }
     }
-    
+
     let searchController = UISearchController(searchResultsController: nil)
 
     var realm: Realm!
     var itemViewController: ItemViewController? = nil
-    var filteredItems: Results<Item>? = nil
     var selectedItems: [IndexPath] = []
     var notificationToken: NotificationToken?
+    var itemSource: ItemSource = .all
 
     deinit {
         notificationToken?.invalidate()
@@ -43,14 +44,16 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // create realm instance
+        // create realm instance for write locking
         realm = try! Realm()
         
-        // fetch collection instance of Items
-        let items = realm.objects(Item.self)
+//        // fetch collection instance of Items
+//        let items = realm.objects(Item.self)
         
         // Oberves changes from Items and updates the view table
-        notificationToken = items.observe { [weak self] (changes) in
+//        notificationToken = items.observe { [weak self] (changes) in
+        notificationToken = itemSource.objects.observe { [weak self] (changes) in
+            print("changes observed in ItemsViewTableController")
             guard let tableView = self?.tableView else {
 
                 return
@@ -107,7 +110,18 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     
     // MARK: - Table view data source
     
+    override func tableView(_ tableView: UITableView,
+                   canMoveRowAt indexPath: IndexPath) -> Bool {
 
+        // It makes no sence to order filter result list
+        if case .filtered(_) = itemSource {
+            return false
+        }
+
+        return true
+    }
+    
+    
     // Permits the data source to exclude individual rows from being treated as editable.
     // Use this if certain cells must not be deleted.
     override func tableView(_ tableView: UITableView,
@@ -125,10 +139,41 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         if tableView.isEditing {
             return .delete
         }
-        
         return .none
     }
 
+    override func tableView(_ tableView: UITableView,
+                            moveRowAt sourceIndexPath: IndexPath,
+                            to destinationIndexPath: IndexPath) {
+
+        func item(for indexPath: IndexPath) -> Item {
+            
+            let index = Int(indexPath.row)
+
+            return itemSource.objects[index]
+        }
+        
+        try! realm.write {
+            let sourceObject = item(for: sourceIndexPath)
+            let destinationObject = item(for: destinationIndexPath)
+            
+            let destinationObjectOrder = destinationObject.sortOrder
+            
+            if sourceIndexPath.row < destinationIndexPath.row {
+                for index in sourceIndexPath.row...destinationIndexPath.row {
+                    let object = itemSource.objects[index]
+                    object.sortOrder -= 1
+                }
+            } else {
+                for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
+                    let object = itemSource.objects[index]
+                    object.sortOrder += 1
+                }
+            }
+            sourceObject.sortOrder = destinationObjectOrder
+        }
+    }
+    
     // Implemented to allow edit or delete data source entry for row at indexPath
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCell.EditingStyle,
@@ -138,7 +183,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
             // Send delete signal to the table view to direct it to adjust its presentation.
             tableView.deleteRows(at: [indexPath],
                                  with: UITableView.RowAnimation.fade)
-        
         case .insert:
             // Should avoid complete refresh of the table view and signals inserts only for indexPath
             print("insert signal in commit editing forRowAt")
@@ -148,16 +192,16 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
 
-
     override func tableView(_ tableView: UITableView,
                             didEndEditingRowAt indexPath: IndexPath?) {
-        
         print("Editing ends on indexPath: \(String(describing: indexPath))")
     }
     
     // edit button is automagic enabled so editing will can be configured with delegate
     override func setEditing(_ editing: Bool, animated: Bool) {
+        
         super.setEditing(editing, animated: true)
+        
         if !editing {
             selectedItems = []
         }
@@ -167,7 +211,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     // Sets Header unvisible (it's a common hack for grouped cells)
     override func tableView(_ tableView: UITableView,
                             heightForHeaderInSection section: Int) -> CGFloat {
-        
         return CGFloat(0.001)
     }
     
@@ -176,10 +219,10 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     // prevents fireing segue when table view is in editing
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         
-        switch identifier {
-        case "ItemPresentSegue":
+        switch segueIdentifier(for: identifier) {
+        case .itemPresentSegue:
             return !isEditing
-        default:
+        case .itemAddSegue:
             return true
         }
     }
@@ -205,10 +248,9 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
                 fatalError("The selected cell is not being displayed by the table")
             }
 
-            let selectedIndex = Int(indexPath.row)
-            let selectedItems = try! Realm().objects(Item.self) as Results<Item>
-            let selectedItem = selectedItems[selectedIndex]
-
+            let index = Int(indexPath.row)
+            let selectedItem = itemSource.objects[index]
+            
             vc.currentItem = selectedItem
 
         case .itemAddSegue:
@@ -262,14 +304,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
 
 extension ItemsTableViewController {
     
-    private func resultListCount() -> Int {
-
-        guard let resultList = currentResultList() else {
-            return 0
-        }
-        return resultList.count
-    }
-    
     // MARK: - table view data source delegates
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -279,9 +313,10 @@ extension ItemsTableViewController {
     
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        if section != 0 { return 0 }
         
-        let count = resultListCount()
+        if section != 0 { return 0 }
+
+        let count = itemSource.objects.count
         
         if (count > 0) {
             tableView.restore()
@@ -300,17 +335,15 @@ extension ItemsTableViewController {
                                                  for: indexPath) as! ItemCell
 
         func item(for indexPath: IndexPath) -> Item {
+            
             let index = Int(indexPath.row)
-            if isFiltering() {
-                return filteredItems![index] as Item
-            }
-            else {
-                return realm.objects(Item.self)[index] as Item
-            }
+            
+            return itemSource.objects[index]
         }
 
         // configure (hides) disclosure indicator when device is in collapsted in split view
         func configureAccessoryType(for cell: UITableViewCell ) {
+            
             if let svc = splitViewController, svc.isCollapsed {
                 cell.accessoryType = .disclosureIndicator
             }
@@ -346,7 +379,6 @@ extension ItemsTableViewController {
 
         // remove indexPath element from selected items
         selectedItems = selectedItems.filter { $0 != indexPath }
-        
         configureEditing(editing: true)
     }
     
@@ -360,12 +392,20 @@ extension ItemsTableViewController {
 }
 
 
-// MARK: - UISearchResultsUpdating Delegate
-
 extension ItemsTableViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
-        filter(searchController.searchBar.text!)
+
+        print("updateSearchResults(for searchController: UISearchController)")
+
+        if searchController.isActive {
+            itemSource = .filtered(searchController.searchBar.text!)
+        }
+        else {
+            itemSource = .all
+        }
+        
+        tableView.reloadData()
     }
     
     // MARK: - Private instance methods
@@ -373,23 +413,6 @@ extension ItemsTableViewController: UISearchResultsUpdating {
     private func searchBarIsEmpty() -> Bool {
 
         return searchController.searchBar.text?.isEmpty ?? true
-    }
-    
-    private func isFiltering() -> Bool {
-
-        return searchController.isActive && !searchBarIsEmpty()
-    }
-    
-    private func filter(_ searchText: String, scope: String = "All") {
-        
-        // Item um einen Enum erweitern, der ein defaultSearchPredicate liefert.
-        // %K ist dann nicht so gut. Oder aber [predicate, k]
-        // Ebenso muss hier ein defaultSort definiert werden.
-        
-        let predicate = NSPredicate(format: "%K CONTAINS[cd] %@", "name", searchText)
-        filteredItems = realm.objects(Item.self).filter(predicate)
-
-        tableView.reloadData()
     }
 }
 
@@ -405,27 +428,14 @@ extension ItemsTableViewController {
         }
     }
 
-    func currentResultList() -> Results<Item>? {
-        if isFiltering() {
-            return filteredItems
-        }
-        else {
-            return realm.objects(Item.self)
-        }
-    }
-    
     func deleteItems() {
 
-        guard let resultList = currentResultList() else {
-            return
-        }
-
-        let objects = filtered(objects: resultList, filter: selectedItems)
+        let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         
         try! realm.write {
             self.realm.delete(objects)
             self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: self.selectedItems, with: .automatic)
+            self.tableView.deleteRows(at: self.selectedItems, with: .fade)
             self.tableView.endUpdates()
         }
         
@@ -436,14 +446,7 @@ extension ItemsTableViewController {
     
     func favoriteItems() {
 
-        guard let resultList = currentResultList() else {
-            
-            return
-        }
-
-        // alle items aus der favoriten-liste werden entfavorisiert und landen dann wieder in der section .listItems.
-        // alle items aus der normalen Liste werden favorisiert und landen dann in der section: .favorite
-        let objects = filtered(objects: resultList, filter: selectedItems)
+        let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         
         try! realm.write {
             for object in objects {
@@ -461,6 +464,7 @@ extension ItemsTableViewController {
         
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.placeholder = NSLocalizedString("Search Items", comment: "Item Search Bar Placeholder")
