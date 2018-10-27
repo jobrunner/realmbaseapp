@@ -47,13 +47,8 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
         // create realm instance for write locking
         realm = try! Realm()
         
-//        // fetch collection instance of Items
-//        let items = realm.objects(Item.self)
-        
         // Oberves changes from Items and updates the view table
-//        notificationToken = items.observe { [weak self] (changes) in
         notificationToken = itemSource.objects.observe { [weak self] (changes) in
-            print("changes observed in ItemsViewTableController")
             guard let tableView = self?.tableView else {
 
                 return
