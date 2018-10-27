@@ -14,7 +14,7 @@
             <objects>
                 <tableViewController id="LfU-WE-51k" customClass="ItemViewController" customModule="RealmBaseApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="kGk-vU-bUm">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="672"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -76,7 +76,7 @@
                     <navigationItem key="navigationItem" title="The Item" id="Y6p-Rb-Is9">
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="IEY-l0-MLR">
                             <connections>
-                                <segue destination="Umk-0K-Czu" kind="presentation" identifier="ItemUpdateSegue" modalPresentationStyle="formSheet" id="rug-kW-b28"/>
+                                <segue destination="Umk-0K-Czu" kind="presentation" identifier="itemUpdateSegue" modalPresentationStyle="formSheet" id="rug-kW-b28"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -312,7 +312,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6rl-CO-b1U" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" largeTitles="YES" id="7sU-c1-Ta1">
-                        <rect key="frame" x="0.0" y="44" width="375" height="96"/>
+                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
@@ -367,7 +367,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="C36-SH-FAA"/>
-        <segue reference="Ofg-ld-wV1"/>
+        <segue reference="A0s-jA-Zu5"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.92549019610000005" green="0.4549019608" blue="0.015686274510000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>
