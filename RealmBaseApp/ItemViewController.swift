@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ItemViewController: UITableViewController {
+class ItemViewController: UITableViewController, SegueHandler {
 
     var realm: Realm!
     var currentItem: Item?
@@ -40,7 +40,6 @@ class ItemViewController: UITableViewController {
 
     override func viewWillTransition(to size: CGSize,
                                      with coordinator: UIViewControllerTransitionCoordinator) {
-        
         super.viewWillTransition(to: size, with: coordinator)
         
         // needs reload data on orientation change because we want redraw the accessory elements
@@ -62,13 +61,10 @@ class ItemViewController: UITableViewController {
 //                self.navigationItem.leftBarButtonItem = self.editButtonItem
             }
             
-            
             self.tableView.reloadData()
         }
     }
 
-    
-    
     
     // MARK: - Table view data source
 
@@ -78,9 +74,9 @@ class ItemViewController: UITableViewController {
 //
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
-        
         if let _ = currentItem, currentItem!.isInvalidated == false {
             tableView.restore()
+
             return 2
         }
         else {
@@ -142,44 +138,33 @@ class ItemViewController: UITableViewController {
 
     // MARK: - Navigation
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
-        // mit enums bauen
-        
-        switch segue.identifier {
-            case "ItemUpdateSegue":
-//                if let vc = segue.destination.presentingViewController as? ItemUpdateTableViewController {
-                
-                if let vc = segue.destination.children.first as? ItemUpdateTableViewController {
-                    print("View controller für Present gefunden")
-
-                    print("currentItem übergeben:")
-                    // ich könnte vc.currentItem überwachen und dann reagieren
-                    
-                    
-                    
-                    vc.currentItem = currentItem
-                }
-            default:
-                print("refactor this with enums!")
-        }
-        
-        print("prepare for segue ends")
+    enum SegueIdentifier: String {
+        case itemUpdateSegue = "itemUpdateSegue"
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segueIdentifier(for: segue) {
+        case .itemUpdateSegue:
+            if let vc = segue.destination.children.first as? ItemUpdateTableViewController {
+                vc.currentItem = currentItem
+            }
+        }
+    }
+    
 }
 
 extension ItemViewController {
 
     func configureView(withItem item: Item?) {
 
-        tableView.reloadData()
+//        tableView.reloadData()
         
         guard let item = item, !item.isInvalidated else {
             print("ItemViewController: configureView gard fired")
             editActionItem.isEnabled = false
             idLabel.text = ""
             nameLabel.text = ""
+            
             return
         }
 
@@ -196,6 +181,8 @@ extension ItemViewController {
             
             self.configureView(withItem: self.currentItem)
             
+            print("CONFIGURE VIEW")
+            
             switch change {
             case .change(let properties):
                 print("changed")
@@ -209,6 +196,20 @@ extension ItemViewController {
             case .deleted:
                 
                 print("deleted")
+                
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 // self.handleDeletion()
                 
                 // Wenn im Splitview-Controller, dann "No Item"
@@ -218,14 +219,28 @@ extension ItemViewController {
                 
                 if let svc = self.splitViewController {
                     print("collapsed")
+                    
+                    if self.realm.objects(Item.self).count > 0 {
+                        self.tableView.setEmptyMessage(NSLocalizedString("No item selected.", comment: "No Item Selected"))
+                    }
+                    else {
+                        self.tableView.setEmptyMessage(NSLocalizedString("No item.", comment: "No Item"))
+                    }
+
+                    
                     // collapsed: false und svc.children == 2 heißt: Die View wird als Detail im Splitview angezeigt.
                     // D.h., sie soll "No Item" anzeigen.
                     print(svc.isCollapsed)
                     print(svc.children.count)
                 }
                 else {
+                    self.navigationController?.popViewController(animated: false)
+//                    self.dismiss(animated: true, completion: nil)
+
                     print("No SplitViewController")
                 }
+                self.tableView.reloadData()
+
                 
                 //                if let nc = self.navigationController?.children.first?.navigationController {
                 //                    print("pop navigation")
