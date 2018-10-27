@@ -22,7 +22,17 @@ extension SegueHandler where Self: UIViewController, SegueIdentifier.RawValue ==
         return segueIdentifier
     }
     
+    func segueIdentifier(for identifier: String?) -> SegueIdentifier {
+        guard let identifier = identifier,
+            let segueIdentifier = SegueIdentifier(rawValue: identifier) else {
+                fatalError("Invalid segue identifier: not set.")
+        }
+        
+        return segueIdentifier
+    }
+    
     public func performSegue(segueIdentifier: SegueIdentifier, sender: Any? = nil) {
+        
         performSegue(withIdentifier: segueIdentifier.rawValue, sender: sender)
     }
 }
