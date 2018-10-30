@@ -117,23 +117,23 @@
 		24F14D33214CF77600C3CC36 /* RealmBaseApp */ = {
 			isa = PBXGroup;
 			children = (
-				247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */,
-				24F4978721836ECE00955AF7 /* Item.swift */,
 				24F14D34214CF77600C3CC36 /* AppDelegate.swift */,
-				24F14D38214CF77600C3CC36 /* Main.storyboard */,
-				24F14D3B214CF77700C3CC36 /* Assets.xcassets */,
-				24F14D3D214CF77700C3CC36 /* LaunchScreen.storyboard */,
-				24F14D40214CF77700C3CC36 /* Info.plist */,
+				24F4978721836ECE00955AF7 /* Item.swift */,
+				24078442216FCBB900D5DC45 /* MainSplitViewController.swift */,
 				24F14D46214CFD6500C3CC36 /* ItemsTableViewController.swift */,
 				24F14D48214CFEA800C3CC36 /* ItemViewController.swift */,
 				24F14D4A214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift */,
-				24F14D4C214D07D700C3CC36 /* DefaultRealm.swift */,
 				24F14D50214D0FDD00C3CC36 /* ItemCell.swift */,
-				24078442216FCBB900D5DC45 /* MainSplitViewController.swift */,
+				24F14D4C214D07D700C3CC36 /* DefaultRealm.swift */,
 				2461C1072173DDC9009432CE /* UITableView.swift */,
 				24F4978921837F9400955AF7 /* SegueHandler.swift */,
 				24F4978B21838D0200955AF7 /* TableViewSectionHandler.swift */,
 				24F4978D2184C02800955AF7 /* Notification.swift */,
+				24F14D38214CF77600C3CC36 /* Main.storyboard */,
+				24F14D3D214CF77700C3CC36 /* LaunchScreen.storyboard */,
+				24F14D3B214CF77700C3CC36 /* Assets.xcassets */,
+				24F14D40214CF77700C3CC36 /* Info.plist */,
+				247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */,
 			);
 			path = RealmBaseApp;
 			sourceTree = "<group>";

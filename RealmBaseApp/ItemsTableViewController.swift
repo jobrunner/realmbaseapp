@@ -292,7 +292,15 @@ extension ItemsTableViewController {
             }
         }
         
+        func confiureSelectedCell(for cell: UITableViewCell) {
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = UIColor.darkGray
+            cell.selectedBackgroundView = backgroundView
+        }
+        
         configureAccessoryType(for: cell)
+        confiureSelectedCell(for: cell)
+
         cell.item = itemSource.objects[indexPath.row]
         
         return cell
