@@ -33,23 +33,11 @@ class ItemViewController: UITableViewController, SegueHandler {
                                      with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        // needs reload data on orientation change because we want redraw the accessory elements
-        coordinator.animate(alongsideTransition: nil) { _ in
-            
-            // landscape mit splitview und nicht collapsed
-            // -> + weg, dafür edit rechts
-            // landscape ohne splitview (also immer collapsed)
-            // -> + lassen, edit auf die linke Seite
-            // portrait mit splitview
-            
-            // ??? -> ich will im Splitview nicht zwei Edit-Buttons sehen. Auch wenn das für die Liste UND das Item ist...
-            
-            if let svc = self.splitViewController, !svc.isCollapsed {
-                // landscape mit offenem Splitview
-//                self.navigationItem.leftBarButtonItem = self.editButtonItem
-            } else {
-                // portaint mit geschlossenem Splitview
-//                self.navigationItem.leftBarButtonItem = self.editButtonItem
+        // needs reload data on orientation change
+        // because we want redraw the accessory elements
+        coordinator.animate(alongsideTransition: nil) { [unowned self] _ in
+            if let svc = self.splitViewController, svc.isCollapsed, self.tableView.numberOfRows(inSection: 0) == 0 {
+                self.navigationController?.navigationController?.popToRootViewController(animated: true)
             }
             self.tableView.reloadData()
         }
