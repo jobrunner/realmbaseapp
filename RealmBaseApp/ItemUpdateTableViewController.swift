@@ -57,11 +57,11 @@ class ItemUpdateTableViewController: UITableViewController {
                     currentItem.sortOrder = maxSortOrder + 1
                 }
             }
-
-            let tag = Tag(tag: "Dienstleister");
-            realm.add(tag, update: true)
+//            let tag = Tag(tag: "Dienstleister");
+//            realm.add(tag, update: true)
+    
             currentItem.name = nameTextField.text!
-            currentItem.tags.append(tag)
+//            currentItem.tags.append(tag)
             
             realm.add(currentItem, update: true)
         }
