@@ -1,6 +1,7 @@
 import UIKit
 
 class MainSplitViewController: UISplitViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSplitViewController()
@@ -18,6 +19,7 @@ extension MainSplitViewController {
         navigationController.topViewController!.navigationItem.leftBarButtonItem = displayModeButtonItem
         delegate = self
     }
+
 }
 
 extension MainSplitViewController: UISplitViewControllerDelegate {
