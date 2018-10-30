@@ -10,6 +10,7 @@
 		24078443216FCBB900D5DC45 /* MainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24078442216FCBB900D5DC45 /* MainSplitViewController.swift */; };
 		24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */; };
 		2461C1082173DDC9009432CE /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2461C1072173DDC9009432CE /* UITableView.swift */; };
+		247F84FA2188E76500E8B279 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 247F84F92188E76500E8B279 /* CloudKit.framework */; };
 		24F14D35214CF77600C3CC36 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F14D34214CF77600C3CC36 /* AppDelegate.swift */; };
 		24F14D3A214CF77600C3CC36 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24F14D38214CF77600C3CC36 /* Main.storyboard */; };
 		24F14D3C214CF77700C3CC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24F14D3B214CF77700C3CC36 /* Assets.xcassets */; };
@@ -43,6 +44,8 @@
 		24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBaseAppTests.swift; sourceTree = "<group>"; };
 		24581FDE217BDA2200FB221F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2461C1072173DDC9009432CE /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
+		247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RealmBaseApp.entitlements; sourceTree = "<group>"; };
+		247F84F92188E76500E8B279 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		24F14D31214CF77600C3CC36 /* RealmBaseApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealmBaseApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24F14D34214CF77600C3CC36 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24F14D39214CF77600C3CC36 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -75,6 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD6632D882EC817F69667110 /* Pods_RealmBaseApp.framework in Frameworks */,
+				247F84FA2188E76500E8B279 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +117,7 @@
 		24F14D33214CF77600C3CC36 /* RealmBaseApp */ = {
 			isa = PBXGroup;
 			children = (
+				247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */,
 				24F4978721836ECE00955AF7 /* Item.swift */,
 				24F14D34214CF77600C3CC36 /* AppDelegate.swift */,
 				24F14D38214CF77600C3CC36 /* Main.storyboard */,
@@ -145,6 +150,7 @@
 		FDD7A8E5E388AF186E6DE9B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				247F84F92188E76500E8B279 /* CloudKit.framework */,
 				180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */,
 			);
 			name = Frameworks;
@@ -207,6 +213,17 @@
 					24F14D30214CF77600C3CC36 = {
 						CreatedOnToolsVersion = 9.4.1;
 						LastSwiftMigration = 1000;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -512,6 +529,7 @@
 			baseConfigurationReference = ABE48FE4499375834E4F3C53 /* Pods-RealmBaseApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = RealmBaseApp/RealmBaseApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L79BTFY6FV;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;
@@ -532,6 +550,7 @@
 			baseConfigurationReference = 9990476C01AD892C4D0B50FD /* Pods-RealmBaseApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = RealmBaseApp/RealmBaseApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L79BTFY6FV;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;

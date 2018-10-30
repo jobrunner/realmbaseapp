@@ -1,5 +1,6 @@
 import Foundation
 import RealmSwift
+import IceCream
 
 enum ItemSource {
     case all
@@ -153,3 +154,15 @@ extension Tag: Managed {
     }
 
 }
+
+extension Item: CKRecordConvertible {}
+
+extension Item: CKRecordRecoverable {}
+
+extension Tag: CKRecordConvertible {}
+
+extension Tag: CKRecordRecoverable {}
+
+extension KeyValue: CKRecordConvertible {}
+
+extension KeyValue: CKRecordRecoverable {}

@@ -1,9 +1,12 @@
 import UIKit
+import IceCream
+import CloudKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var syncEngine: SyncEngine?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Tell Realm to use this new configuration object for the default Realm
@@ -13,6 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        print("Local Realm:")
 //        print(defaultRealm.fileUrl ?? "no file url provided :-(")
 
+        // Start IceCream sync engine
+        syncEngine = SyncEngine(objects: [
+            SyncObject<Item>(),
+            SyncObject<Tag>(),
+            SyncObject<KeyValue>()
+        ])
+        
+        application.registerForRemoteNotifications()
+        
         return true
     }
 
@@ -29,6 +41,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
+    }
+
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        let dict = userInfo as! [String: NSObject]
+        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
+        
+        if (notification.subscriptionID == IceCreamConstant.cloudKitSubscriptionID) {
+            NotificationCenter.default.post(name: Notifications.cloudKitDataDidChangeRemotely.name,
+                                            object: nil,
+                                            userInfo: userInfo)
+        }
+        completionHandler(.newData)
     }
 
 }
