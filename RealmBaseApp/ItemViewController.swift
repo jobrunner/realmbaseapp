@@ -5,8 +5,27 @@ import RealmSwift
 class ItemViewController: UITableViewController, SegueHandler {
 
     var realm: Realm!
-    var currentItem: Item?
     var notificationToken: NotificationToken?
+    var itemSource: ItemSource! {
+        didSet {
+            notificationToken = itemSource.objects.observe { [weak self] (changes) in
+                guard let tableView = self?.tableView else {
+                    return
+                }
+                // reload triggers the delegate method
+                // tableView(_:numberOfRowsInSection)
+                tableView.reloadData()
+            }
+        }
+    }
+    var indexPath: IndexPath?
+    var currentItem: Item? {
+        didSet {
+            if currentItem == nil {
+                print("current item in item view controller gesetzt")
+            }
+        }
+    }
     
     deinit {
         notificationToken?.invalidate()
@@ -21,10 +40,16 @@ class ItemViewController: UITableViewController, SegueHandler {
     override func viewDidLoad() {
         super.viewDidLoad()
         realm = try! Realm()
-        setNotification(item: currentItem)
+        observeToNotifications()
         configureView(withItem: currentItem)
     }
 
+    @objc func didDeselectItem(_ notification:Notification) {
+        currentItem = nil
+        configureView(withItem: currentItem)
+        tableView.reloadData()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureView(withItem: currentItem)
@@ -147,89 +172,33 @@ extension ItemViewController {
         favoriteActionItem.setOn(item.favorite, animated: true)
     }
 
-    func setNotification(item: Item?) {
-        
-        notificationToken = item?.observe { change in
-            
-            self.configureView(withItem: self.currentItem)
-            
-            print("CONFIGURE VIEW")
-            
-            switch change {
-            case .change(let properties):
-                print("changed")
-                print(properties)
-                //                if let readChange = properties.first(where: { $0.name == "isRead" }) {
-                //                    self.showReadBadge = readChange.newValue as! Bool
-                //                }
-                //                if let contentChange = properties.first(where: { $0.name == "content" }) {
-                //                    self.contentView.textValue = contentChange.newValue as! String
-            //                }
-            case .deleted:
-                
-                print("deleted")
-                
+    func observeToNotifications() {
+        // Needs to know when ItemsTableViewController los an item selection (e.g. after batch operation)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didDeselectItem(_:)),
+                                               name: .didDeselectItem,
+                                               object: nil)
 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                // self.handleDeletion()
-                
-                // Wenn im Splitview-Controller, dann "No Item"
-                // Wenn nicht im Splitview-Controller, dann zum vorhergehenden Controller wechseln (Liste)
-                
-                //                self.dismiss(animated: true, completion: nil)
-                
-                if let svc = self.splitViewController {
-                    print("collapsed")
-                    
-                    if self.realm.objects(Item.self).count > 0 {
-                        self.tableView.setEmptyMessage(NSLocalizedString("No item selected.", comment: "No Item Selected"))
-                    }
-                    else {
-                        self.tableView.setEmptyMessage(NSLocalizedString("No item.", comment: "No Item"))
-                    }
-
-                    
-                    // collapsed: false und svc.children == 2 heißt: Die View wird als Detail im Splitview angezeigt.
-                    // D.h., sie soll "No Item" anzeigen.
-                    print(svc.isCollapsed)
-                    print(svc.children.count)
+        // Needs to know if data source has changed to reload/inactive view or pop to master view
+        guard let itemSource = itemSource else { return }
+        let objects = itemSource.objects
+        notificationToken = objects.observe { [weak self] (changes: RealmCollectionChange) in
+            guard let self = self else { return }
+            switch changes {
+            case .initial(_):
+                self.tableView.reloadData()
+                self.configureView(withItem: self.currentItem)
+            case .update(_, let deletions, _, _):
+                if let svc = self.splitViewController, svc.isCollapsed, deletions.count > 0 {
+                    self.navigationController?.navigationController?.popToRootViewController(animated: true)
                 }
                 else {
-                    self.navigationController?.popViewController(animated: false)
-//                    self.dismiss(animated: true, completion: nil)
-
-                    print("No SplitViewController")
+                    self.tableView.reloadData()
+                    self.configureView(withItem: nil)
                 }
-                self.tableView.reloadData()
-
-                
-                //                if let nc = self.navigationController?.children.first?.navigationController {
-                //                    print("pop navigation")
-                //                    nc.popToRootViewController(animated: true)
-                ////                    nc.popViewController(animated: false)
-                //                }
-                //                else {
-                //                    print("navigation controller nicht verfügbar. Warum?")
-                //                }
-                
-                
-            case .error(let error):
-                print("error")
-                print(error)
-                // self.handleError(error)
+            case .error:
+                break
             }
-            self.configureView(withItem: nil)
         }
     }
 
