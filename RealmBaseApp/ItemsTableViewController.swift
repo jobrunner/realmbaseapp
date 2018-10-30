@@ -333,7 +333,6 @@ extension ItemsTableViewController {
 
 }
 
-
 extension ItemsTableViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -365,6 +364,7 @@ extension ItemsTableViewController {
     }
 
     func deleteItems() {
+
         let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         try! realm.write {
             self.realm.delete(objects)
