@@ -33,6 +33,7 @@ class ItemUpdateTableViewController: UITableViewController {
     // MARK: IB Outlets/Actions
     
     @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var favoriteSwitchItem: UISwitch!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
     @IBOutlet weak var saveButton: UIBarButtonItem!
@@ -61,6 +62,7 @@ class ItemUpdateTableViewController: UITableViewController {
 //            realm.add(tag, update: true)
     
             currentItem.name = nameTextField.text!
+            currentItem.favorite = favoriteSwitchItem.isOn
 //            currentItem.tags.append(tag)
             
             realm.add(currentItem, update: true)
@@ -114,6 +116,7 @@ extension ItemUpdateTableViewController {
             saveButton.isEnabled = false
             deleteButton.isEnabled = true
             nameTextField.text = currentItem.name
+            favoriteSwitchItem.isOn = currentItem.favorite
         } else {
             saveButton.isEnabled = false
             deleteButton.isEnabled = false
