@@ -1,34 +1,12 @@
-//
-//  MainSplitViewController.swift
-//  RealmBaseApp
-//
-//  Created by Jo Brunner on 11.10.18.
-//  Copyright © 2018 Mayflower GmbH. All rights reserved.
-//
-
 import UIKit
 
 class MainSplitViewController: UISplitViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSplitViewController()
-        
-        print("Did load MainSplitViewController")
     }
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 }
-
 
 extension MainSplitViewController {
     
@@ -36,14 +14,11 @@ extension MainSplitViewController {
 
     func configureSplitViewController() {
         preferredDisplayMode = .allVisible
-        
         let navigationController = viewControllers[viewControllers.count-1] as! UINavigationController
         navigationController.topViewController!.navigationItem.leftBarButtonItem = displayModeButtonItem
         delegate = self
     }
 }
-
-
 
 extension MainSplitViewController: UISplitViewControllerDelegate {
 
@@ -52,7 +27,6 @@ extension MainSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController,
                              collapseSecondary secondaryViewController:UIViewController,
                              onto primaryViewController:UIViewController) -> Bool {
-        
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController
             else {
                 return false
@@ -64,9 +38,12 @@ extension MainSplitViewController: UISplitViewControllerDelegate {
         }
         
         if topAsDetailController.currentItem == nil {
-            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
+            // Return true to indicate that we have handled the collapse by doing nothing;
+            // the secondary controller will be discarded.
             return true
         }
+
         return false
     }
+
 }

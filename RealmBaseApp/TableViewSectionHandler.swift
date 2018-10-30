@@ -1,6 +1,5 @@
 import UIKit
 
-
 protocol TableViewSectionHandler {
     associatedtype TableViewSection: RawRepresentable
 }

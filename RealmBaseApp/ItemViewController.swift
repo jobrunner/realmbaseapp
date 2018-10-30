@@ -1,13 +1,6 @@
-//
-//  ItemViewController.swift
-//  RealmBaseApp
-//
-//  Created by Jo Brunner on 15.09.18.
-//  Copyright © 2018 Mayflower GmbH. All rights reserved.
-//
-
 import UIKit
 import RealmSwift
+
 
 class ItemViewController: UITableViewController, SegueHandler {
 
@@ -25,7 +18,6 @@ class ItemViewController: UITableViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         realm = try! Realm()
         setNotification(item: currentItem)
         configureView(withItem: currentItem)
@@ -33,8 +25,6 @@ class ItemViewController: UITableViewController, SegueHandler {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        print("ItemViewController viewWillAppear")
         configureView(withItem: currentItem)
     }
 
@@ -60,18 +50,12 @@ class ItemViewController: UITableViewController, SegueHandler {
                 // portaint mit geschlossenem Splitview
 //                self.navigationItem.leftBarButtonItem = self.editButtonItem
             }
-            
             self.tableView.reloadData()
         }
     }
-
     
     // MARK: - Table view data source
 
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        return 2
-//    }
-//
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
         if let _ = currentItem, currentItem!.isInvalidated == false {
@@ -156,9 +140,6 @@ class ItemViewController: UITableViewController, SegueHandler {
 extension ItemViewController {
 
     func configureView(withItem item: Item?) {
-
-//        tableView.reloadData()
-        
         guard let item = item, !item.isInvalidated else {
             print("ItemViewController: configureView gard fired")
             editActionItem.isEnabled = false
@@ -168,9 +149,7 @@ extension ItemViewController {
             return
         }
 
-        print("ItemViewController: configureView set values")
         editActionItem.isEnabled = true
-
         idLabel.text = item.id
         nameLabel.text = item.name
     }

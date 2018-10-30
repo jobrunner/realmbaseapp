@@ -1,6 +1,3 @@
-//  Copyright © 2018 Mayflower GmbH. All rights reserved.
-//  Author Jo Brunner
-
 import UIKit
 import RealmSwift
 
