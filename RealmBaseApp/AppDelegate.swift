@@ -8,15 +8,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var syncEngine: SyncEngine?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Tell Realm to use this new configuration object for the default Realm
-        let defaultRealm = DefaultRealm()
-        defaultRealm.migrate()
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Tell Realm to use this new
+        // configuration object for the default Realm
+        DefaultRealm().migrate()
         
-//        print("Local Realm:")
-//        print(defaultRealm.fileUrl ?? "no file url provided :-(")
-
-        // Start IceCream sync engine
+        // Configure Models that should be synchronized
+        // with iCloud using IceCream
         syncEngine = SyncEngine(objects: [
             SyncObject<Item>(),
             SyncObject<Tag>(),
