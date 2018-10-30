@@ -367,11 +367,13 @@ extension ItemsTableViewController {
 
         let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         try! realm.write {
-            self.realm.delete(objects)
-            self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: self.selectedItems, with: .fade)
-            self.tableView.endUpdates()
+            for object in objects {
+                object.isDeleted = true
+            }
         }
+        self.tableView.beginUpdates()
+        self.tableView.deleteRows(at: self.selectedItems, with: .fade)
+        self.tableView.endUpdates()
         
         // reset indexPaths for selected items
         selectedItems = []

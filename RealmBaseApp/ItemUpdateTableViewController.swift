@@ -87,7 +87,7 @@ class ItemUpdateTableViewController: UITableViewController {
                                      handler: { action in
                                         self.dismiss(animated: true, completion: {
                                             try! self.realm.write {
-                                                self.realm.delete(currentItem)
+                                                currentItem.isDeleted = true
                                             }
                                         })
         })
