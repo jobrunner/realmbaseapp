@@ -3,7 +3,13 @@ import RealmSwift
 
 class ItemUpdateTableViewController: UITableViewController {
 
-    var currentItem: Item?
+    var itemSource: ItemSource!
+    var isNewRecord: Bool = true
+    var currentItem: Item? {
+        didSet {
+            isNewRecord = (currentItem == nil)
+        }
+    }
     var realm: Realm!
     var notificationToken: NotificationToken?
     
@@ -46,9 +52,10 @@ class ItemUpdateTableViewController: UITableViewController {
         }
 
         try! realm.write {
-
-            if let maxSortOrder =  realm.objects(Item.self).max(ofProperty: "sortOrder") as Int? {
-                currentItem.sortOrder = maxSortOrder + 1
+            if isNewRecord {
+                if let maxSortOrder =  realm.objects(Item.self).max(ofProperty: "sortOrder") as Int? {
+                    currentItem.sortOrder = maxSortOrder + 1
+                }
             }
 
             let tag = Tag(tag: "Dienstleister");
