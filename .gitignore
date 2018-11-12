@@ -42,6 +42,8 @@ Carthage/Build
 fastlane/report.xml
 fastlane/screenshots
 
-architecture/
-docs/
+architecture/*
+docs/*
+!architecture/build/.gitkeep
+!docs/.gitkeep
 
