@@ -33,6 +33,14 @@ extension ItemSource {
     }
 
     var sortDescriptors: [SortDescriptor] {
+
+        // manualy -> sortOrder
+        // name    -> name
+        // date    -> date
+        
+        // und je nachdem, ob die TableView Favoriten in einer eigenen Section gruppiert dargestellt werden sollen
+        // muss zuerst absteigend nach favorite sortiert werden (true oben, false unten)
+
         switch self {
         case .all:
             return Item.defaultSortDescriptors

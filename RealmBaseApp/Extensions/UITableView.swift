@@ -1,7 +1,7 @@
 import UIKit
 
 extension UITableView {
-    
+
     func setEmptyMessage(_ message: String) {
         let messageLabel = UILabel()
         messageLabel.frame = CGRect(x: 0,

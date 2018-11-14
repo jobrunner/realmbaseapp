@@ -1,9 +1,9 @@
 import UIKit
 import RealmSwift
 
-class ItemsTableViewController: UITableViewController, UISearchBarDelegate, SegueHandler, TableViewSectionHandler {
+class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSectionHandler {
 
-    // tbd.
+    // TODO: build section handling on scratch
     enum TableViewSection: Int {
         case favorites = 0
         case listItems = 1
@@ -30,10 +30,17 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
 
     var realm: Realm!
     var itemViewController: ItemViewController? = nil
-    var selectedItems: [IndexPath] = []
+    var selectedItems: [IndexPath] = [] {
+        didSet {
+            print("item selected")
+        }
+    }
+
+
     var notificationToken: NotificationToken?
     var itemSource: ItemSource = .all
     let searchController = UISearchController(searchResultsController: nil)
+    let overlayTransitioningDelegate = SortOptionsTransitioningDelegate()
 
     deinit {
         notificationToken?.invalidate()
@@ -44,6 +51,11 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
 
         // create realm instance for write locking
         realm = try! Realm()
+
+        // Transfer an Item to another app with drag (iPad only)
+        tableView.dragDelegate = self
+        // Not implemented: Drag data to Items (iPad only)
+        // tableView.dropDelegate = self
         
         // Oberves changes from Items and updates the view table
         notificationToken = itemSource.objects.observe { [weak self] (changes) in
@@ -52,8 +64,9 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
             }
             tableView.reloadData()
         }
-        navigationItem.leftBarButtonItem = editButtonItem
-        configureSearch()
+        configureSearch(false)
+        configureToolbar(false)
+        configureNavigationBar(false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -64,13 +77,10 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
         coordinator.animate(alongsideTransition: nil) { _ in
             if let svc = self.splitViewController, !svc.isCollapsed {
                 self.clearsSelectionOnViewWillAppear = false
-//                self.navigationItem.rightBarButtonItem = self.editButtonItem
             } else {
                 // collapsed split view
                 self.clearsSelectionOnViewWillAppear = true
-                self.navigationItem.rightBarButtonItem = self.editButtonItem
             }
-            
             self.tableView.reloadData()
         }
     }
@@ -110,16 +120,13 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
                             moveRowAt sourceIndexPath: IndexPath,
                             to destinationIndexPath: IndexPath) {
         func item(for indexPath: IndexPath) -> Item {
-            
             let index = Int(indexPath.row)
-
             return itemSource.objects[index]
         }
         
         try! realm.write {
             let sourceObject = item(for: sourceIndexPath)
             let destinationObject = item(for: destinationIndexPath)
-            
             let destinationObjectOrder = destinationObject.sortOrder
             
             if sourceIndexPath.row < destinationIndexPath.row {
@@ -154,6 +161,7 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
         }
     }
 
+    // UIViewDelegate an UITableViewDelegate...
     // edit button is automagic enabled so editing will can be configured with delegate
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
@@ -161,13 +169,69 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
         if !editing {
             selectedItems = []
         }
-        configureEditing(editing: editing)
+        
+        tableView.isEditing = editing
+        
+        configureToolbar(editing)
+        configureNavigationBar(editing)
     }
-    
-    // Sets Header unvisible (it's a common hack for grouped cells)
-    override func tableView(_ tableView: UITableView,
-                            heightForHeaderInSection section: Int) -> CGFloat {
-        return CGFloat(0.001)
+
+    func configureToolbar(_ editing: Bool) {
+        if editing {
+            let moreActionItem = UIBarButtonItem(barButtonSystemItem: .action,
+                                                 target: self,
+                                                 action: #selector(moreAction(_:)))
+            let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+            let deleteActionItem = UIBarButtonItem(barButtonSystemItem: .trash,
+                                                   target: self,
+                                                   action: #selector(deleteAction(_:)))
+            let toolbarItems = [deleteActionItem, flexSpace, moreActionItem]
+            setToolbarItems(toolbarItems, animated: true)
+        }
+        else {
+            let editActionItem = UIBarButtonItem(title: NSLocalizedString("Select", comment: "Bar Button: Edit"),
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(editAction(_:)))
+            let sortActionItem = UIBarButtonItem(title: NSLocalizedString("Sort", comment: "Bar Button: Sort"),
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(sortAction(_:)))
+            let addActionItem = UIBarButtonItem(barButtonSystemItem: .compose,
+                                                target: self,
+                                                action: #selector(addAction(_:)))
+            let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+            let toolbarItems: [UIBarButtonItem] = [sortActionItem,
+                                                   flexSpace,
+                                                   addActionItem,
+                                                   flexSpace,
+                                                   editActionItem]
+            setToolbarItems(toolbarItems, animated: true)
+        }
+    }
+
+    func configureNavigationBar(_ editing: Bool) {
+        if editing {
+            let selectAllButton = UIBarButtonItem(title: NSLocalizedString("Select All", comment: "Nav Bar Item: Select All"),
+                                                  style: .plain,
+                                                  target: self,
+                                                  action: #selector(selectAllAction(_:)))
+            navigationItem.leftBarButtonItems = [selectAllButton]
+
+            let doneButton = UIBarButtonItem(title: NSLocalizedString("Done", comment: "Nav Bar Item: Done"),
+                                             style: .plain,
+                                             target: self,
+                                             action: #selector(doneAction(_:)))
+            navigationItem.rightBarButtonItems = [doneButton]
+        }
+        else {
+            navigationItem.leftBarButtonItems = nil
+            navigationItem.rightBarButtonItems = nil
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Items"
     }
     
     // MARK: - Navigation
@@ -179,12 +243,15 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
             return !isEditing
         case .itemAddSegue:
             return true
+        case .itemsSortOptionsSegue:
+            return true
         }
     }
     
     enum SegueIdentifier: String {
         case itemPresentSegue = "itemPresentSegue"
         case itemAddSegue = "itemAddSegue"
+        case itemsSortOptionsSegue = "itemsSortOptionsSegue"
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -207,25 +274,56 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
             vc.currentItem = selectedItem
         case .itemAddSegue:
             if let vc = segue.destination as? ItemUpdateTableViewController {
+                print("Add Item")
                 vc.itemSource = itemSource
                 vc.currentItem = nil
             }
+        case .itemsSortOptionsSegue:
+            guard let overlayViewController = segue.destination as? SortOptionsController else { return }
+
+            customOverlay(prepare: overlayViewController)
+            overlayViewController.itemSource = itemSource
         }
     }
 
-    // MARK: IB Outlets/Actions
+    // MARK: Actions
+
+    @objc func editAction(_ sender: UIBarButtonItem) {
+        isEditing = true
+    }
+
+    @objc func doneAction(_ sender: UIBarButtonItem) {
+        isEditing = false
+    }
     
-    @IBOutlet weak var deleteActionItem: UIBarButtonItem!
-    @IBOutlet weak var addActionItem: UIBarButtonItem!
-    @IBOutlet weak var actionMoreItem: UIBarButtonItem!
-    
+    @objc func addAction(_ sender: UIBarButtonItem) {
+        performSegue(segueIdentifier: .itemAddSegue, sender: sender)
+    }
+
     // Batch action: delete selectedItems
-    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+    @objc func deleteAction(_ sender: UIBarButtonItem) {
         deleteItems()
     }
 
-    @IBAction func moreAction(_ sender: UIBarButtonItem) {
-        let actionSheet = UIAlertController(title: nil,
+    @objc func selectAllAction(_ sender: UIBarButtonItem) {
+        let totalRows = tableView.numberOfRows(inSection: 0)
+        for row in 0..<totalRows {
+            tableView.selectRow(at: IndexPath(row: row, section: 0) as IndexPath,
+                                animated: false,
+                                scrollPosition: UITableView.ScrollPosition.none)
+        }
+    }
+    
+    @objc func searchAction(_ sender: UIBarButtonItem) {
+        configureSearch(true)
+    }
+    
+    @objc func sortAction(_ sender: UIBarButtonItem) {
+        performSegue(segueIdentifier: .itemsSortOptionsSegue, sender: sender)
+    }
+    
+    @objc func moreAction(_ sender: UIBarButtonItem) {
+        let alertController = UIAlertController(title: nil,
                                             message: nil,
                                             preferredStyle: .actionSheet)
 
@@ -236,24 +334,41 @@ class ItemsTableViewController: UITableViewController, UISearchBarDelegate, Segu
         })
         let actionArchive = UIAlertAction(title: NSLocalizedString("Move to archive", comment: "Action Sheet Archive"),
                                            style: .default,
-                                           handler: nil)
+                                           handler: { _ in
+                                            self.isEditing = false
+        })
 
         actionFavorite.isEnabled = isEditing && selectedItems.count > 0
         let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel",
                                                                   comment: "Action Sheet Cancel"),
                                          style: .cancel,
                                          handler: nil)
-        actionSheet.addAction(actionFavorite)
-        actionSheet.addAction(actionArchive)
-        actionSheet.addAction(actionCancel)
-        actionSheet.modalPresentationStyle = .popover
-        present(actionSheet, animated: true)
+        alertController.addAction(actionFavorite)
+        alertController.addAction(actionArchive)
+        alertController.addAction(actionCancel)
+
+        if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad ) {            
+            if let popoverController = alertController.popoverPresentationController {
+                popoverController.barButtonItem = sender
+                popoverController.permittedArrowDirections = []
+                alertController.modalPresentationStyle = .popover
+                present(alertController, animated: true, completion: nil)
+            }
+            else {
+                alertController.modalPresentationStyle = .formSheet
+                present(alertController, animated: true, completion: nil)
+            }
+        }
+        else {
+            alertController.modalPresentationStyle = .formSheet
+            present(alertController, animated: true)
+        }
     }
+
 }
 
+// MARK: - table view data source delegates
 extension ItemsTableViewController {
-    
-    // MARK: - table view data source delegates
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -261,7 +376,8 @@ extension ItemsTableViewController {
     
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        if section != 0 { return 0 }
+//        if section == 0 { return 0 }
+//        if section > 1 { return 0 }
 
         let count = itemSource.objects.count
         
@@ -309,33 +425,28 @@ extension ItemsTableViewController {
     override func tableView (_ tableView: UITableView,
                     didSelectRowAt indexPath: IndexPath) {
         if !isEditing {
-            
             return
         }
 
         selectedItems.append(indexPath)
-        configureEditing(editing: true)
     }
     
     // manages items selected in table editing
     override func tableView(_ tableView: UITableView,
                             didDeselectRowAt indexPath: IndexPath) {
         if !isEditing {
-
             return
         }
         NotificationCenter.default.post(Notification(name: .didDeselectItem))
 
         // remove indexPath element from selected items
         selectedItems = selectedItems.filter { $0 != indexPath }
-        configureEditing(editing: true)
     }
     
     // configure a swipe menu
     override func tableView(_ tableView: UITableView,
                             trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
         -> UISwipeActionsConfiguration? {
-
         return swipeActionConfiguration(indexPath: indexPath)
     }
 
@@ -360,7 +471,27 @@ extension ItemsTableViewController: UISearchResultsUpdating {
     }
 }
 
+extension ItemsTableViewController: UISearchBarDelegate {
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        return true
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+
+}
+
 extension ItemsTableViewController {
+
+    // das könnte in eine Extension von UIViewController, sofern wir
+    // eine strong reference auf overlayTransitioningDelegate verwalten können
+    // Außerdem muss gegen ein Protokoll gearbeitet werden...
+    private func customOverlay(prepare viewController: SortOptionsController) {
+        viewController.transitioningDelegate = overlayTransitioningDelegate
+        viewController.modalPresentationStyle = .custom
+    }
 
     private func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
         let indices: [Int] = indexPaths.map { indexPath in
@@ -372,7 +503,6 @@ extension ItemsTableViewController {
     }
 
     func deleteItems() {
-
         let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         try! realm.write {
             for object in objects {
@@ -380,12 +510,12 @@ extension ItemsTableViewController {
             }
         }
         self.tableView.beginUpdates()
-        self.tableView.deleteRows(at: self.selectedItems, with: .fade)
+        self.tableView.deleteRows(at: self.selectedItems, with: .automatic)
         self.tableView.endUpdates()
         
         // reset indexPaths for selected items
         selectedItems = []
-        setEditing(false, animated: true)
+        isEditing = false
     }
     
     func favoriteItems() {
@@ -395,38 +525,61 @@ extension ItemsTableViewController {
                 object.favorite = true
             }
         }
-        tableView.reloadRows(at: selectedItems, with: .top)
+        tableView.reloadRows(at: selectedItems, with: .automatic)
         
         // reset indexPaths for selected items
         selectedItems = []
-        setEditing(false, animated: true)
+        isEditing = false
     }
-
+    
     // Setup the Search Controller
-    func configureSearch() {
+    // TODO: Den SearchController mit einem lazy bastelln...
+    func configureSearch(_ enabled: Bool = true) {
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.placeholder = NSLocalizedString("Search Items", comment: "Item Search Bar Placeholder")
-        navigationItem.searchController = searchController
         definesPresentationContext = true
-        searchController.searchBar.tintColor = UIColor.white
-        let attrs = NSAttributedString.Key.foregroundColor
-        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
-            .defaultTextAttributes = [attrs: UIColor.white]
-    }
+        
+        let searchBar = searchController.searchBar
+        searchBar.placeholder = NSLocalizedString("Search", comment: "Search Bar Placeholder")
 
-    func configureEditing(editing: Bool) {
-        deleteActionItem.isEnabled = editing && (selectedItems.count > 0)
-        actionMoreItem.isEnabled = editing && (selectedItems.count > 0)
-        addActionItem.isEnabled = !editing
+        tableView.tableHeaderView = searchBar
+        
+        searchBar.backgroundColor = UIColor.clear
+        searchBar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+
+        // TODO: Streamline colors central
+        let tintColor = UIColor(fromString: "#EC7404")
+        
+        searchBar.tintColor = tintColor
+        searchBar.isTranslucent = true
+
+        for s in searchBar.subviews[0].subviews {
+            if s is UITextField {
+                let textField = s as! UITextField
+                textField.textColor = UIColor.white
+                textField.backgroundColor = UIColor.darkGray
+            }
+        }
+
+        // Customizes cursor
+        let textFieldInsideSearchBar = searchBar.value(forKey: "searchField") as? UITextField
+        textFieldInsideSearchBar?.tintColor = tintColor
+
+        // Customizes glas
+        let glassIconView = textFieldInsideSearchBar?.leftView as? UIImageView
+        glassIconView?.image = glassIconView?.image?.withRenderingMode(.alwaysTemplate)
+        glassIconView?.tintColor = tintColor
+
+        searchController.isActive = true
     }
 
     func swipeActionConfiguration(indexPath: IndexPath) -> UISwipeActionsConfiguration {
         // swipe action: delete
         let deleteAction = UIContextualAction(style: .destructive, title: "delete", handler: {_,_,_ in
             self.selectedItems.append(indexPath)
+            //???
             self.setEditing(true, animated: true)
             
             self.deleteItems()
@@ -447,4 +600,11 @@ extension ItemsTableViewController {
         return UISwipeActionsConfiguration(actions: [favoriteAction, deleteAction])
     }
     
+}
+
+extension ItemsTableViewController: UIPopoverPresentationControllerDelegate {
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        // Force popover style
+        return UIModalPresentationStyle.overCurrentContext
+    }
 }

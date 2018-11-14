@@ -1,7 +1,6 @@
 import UIKit
 import RealmSwift
 
-
 class ItemViewController: UITableViewController, SegueHandler {
 
     var realm: Realm!

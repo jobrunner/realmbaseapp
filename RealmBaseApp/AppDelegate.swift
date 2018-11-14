@@ -13,7 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Tell Realm to use this new
         // configuration object for the default Realm
         DefaultRealm().migrate()
-        
+
+        // TODO: Switch iCloude or not
         // Configure Models that should be synchronized
         // with iCloud using IceCream
         syncEngine = SyncEngine(objects: [
@@ -49,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let notification = CKNotification(fromRemoteNotificationDictionary: dict)
         
         if (notification.subscriptionID == IceCreamConstant.cloudKitSubscriptionID) {
+
             NotificationCenter.default.post(name: Notifications.cloudKitDataDidChangeRemotely.name,
                                             object: nil,
                                             userInfo: userInfo)

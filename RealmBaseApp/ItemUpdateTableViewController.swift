@@ -1,8 +1,17 @@
 import UIKit
 import RealmSwift
 
+/**
+ UITableViewController, der die Item-Details darstellt. Man kann bearbeiten/speichern, abbrechen oder das item löschen.
+
+ Die `StoryboardId` ist:
+  - `ItemUpdateTableViewController`
+
+ damit er später unterschieden und auch als nib geladen werden kann.
+ */
 class ItemUpdateTableViewController: UITableViewController {
 
+    // FIXME: Ich finde das hier nicht wirlich sexy.
     var itemSource: ItemSource!
     var isNewRecord: Bool = true
     var currentItem: Item? {
@@ -58,24 +67,24 @@ class ItemUpdateTableViewController: UITableViewController {
                     currentItem.sortOrder = maxSortOrder + 1
                 }
             }
-//            let tag = Tag(tag: "Dienstleister");
-//            realm.add(tag, update: true)
+            // let tag = Tag(tag: "Dienstleister");
+            // realm.add(tag, update: true)
     
             currentItem.name = nameTextField.text!
             currentItem.favorite = favoriteSwitchItem.isOn
-//            currentItem.tags.append(tag)
+            // currentItem.tags.append(tag)
             
             realm.add(currentItem, update: true)
         }
         dismiss(animated: true, completion: nil)
     }
-    
+
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
         guard let currentItem = currentItem,
             !currentItem.isInvalidated else {
             return
         }
-        
+
         let actionSheet = UIAlertController(title: NSLocalizedString("Remove item?",
                                                                      comment: "Action Sheet Remove Item Alert Title"),
                                             message: NSLocalizedString("You will lost the item.",
@@ -100,17 +109,23 @@ class ItemUpdateTableViewController: UITableViewController {
         
         present(actionSheet, animated: true)
     }
-    
+
+    // TODO: das ist gruselig.
     
     // enables save button after change and text is not empty
     @IBAction func nameTextFieldEditingChanged(_ sender: UITextField) {
         saveButton.isEnabled = sender.text?.count ?? 0 > 0
     }
 
+    // enables save button after change of switch and text is not empty
+    @IBAction func favoriteSwitchValueChanged(_ sender: UISwitch) {
+        saveButton.isEnabled = nameTextField.text?.count ?? 0 > 0
+    }
+
 }
 
 extension ItemUpdateTableViewController {
-    
+
     func configureView(withItem item: Item?) {
         if let currentItem = item {
             saveButton.isEnabled = false

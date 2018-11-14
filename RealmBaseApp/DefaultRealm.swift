@@ -1,11 +1,14 @@
 import UIKit
 import RealmSwift
 
+/// DefaultRealm is mainly about migration and configureing the migrated/current realm
 struct DefaultRealm {
 
+    /// Current version of the realm. It must be incremented when changes made to any realm object.
     let currentVersion: UInt64 = 5
 
-    public var fileUrl: URL? {
+    /// Only for debugging; returning the concrete file url of the local realm database file.
+    var fileUrl: URL? {
         get {
             guard let fileUrl = Realm.Configuration.defaultConfiguration.fileURL else {
                 return nil
@@ -14,7 +17,7 @@ struct DefaultRealm {
         }
     }
     
-    public lazy var realm: Realm = {
+    lazy var realm: Realm = {
         return try! Realm()
     }()
     
@@ -31,4 +34,5 @@ struct DefaultRealm {
 
         migrate(to: currentVersion)
     }
+
 }
