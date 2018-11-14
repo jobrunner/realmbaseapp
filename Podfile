@@ -7,3 +7,7 @@ target 'RealmBaseApp' do
   pod 'IceCream'
 end
 
+target 'RealmBaseAppTests' do
+  use_frameworks!
+  pod 'EarlGrey'
+end
