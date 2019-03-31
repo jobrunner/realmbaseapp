@@ -10,6 +10,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        guard let window = window else {
+            fatalError("No Key Window defined.")
+        }
+
         // Tell Realm to use this new
         // configuration object for the default Realm
         DefaultRealm().migrate()
@@ -24,7 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ])
         
         application.registerForRemoteNotifications()
-        
+
+        window.backgroundColor = UIColor.lightGray
+        window.rootViewController = rootViewController
+
         return true
     }
 
@@ -58,4 +65,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         completionHandler(.newData)
     }
 
+}
+
+extension AppDelegate {
+
+    // containerViewController
+    var rootViewController: UIViewController {
+        get {
+            let splitViewController = UIStoryboard(name: "Main",
+                                                   bundle: nil)
+                .instantiateViewController(withIdentifier: "MainSplitViewController") as? MainSplitViewController
+
+            guard let svc = splitViewController else {
+                fatalError("SplitViewController not found with storyboardId = 'MainSplitViewController'")
+            }
+
+            svc.preferredDisplayMode = .allVisible
+            let vc : CustomViewController = CustomViewController()
+            vc.setEmbeddedViewController(splitViewController: svc)
+
+            return vc
+        }
+    }
 }

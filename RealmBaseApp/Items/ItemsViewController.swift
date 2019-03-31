@@ -1,46 +1,50 @@
 import UIKit
 import RealmSwift
 
-class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSectionHandler {
+class ItemsViewController: UIViewController, SegueHandler { // , TableViewSectionHandler
 
-    // TODO: build section handling on scratch
-    enum TableViewSection: Int {
-        case favorites = 0
-        case listItems = 1
-        case archivedItems = 2
-        
-        func count() -> Int {
-            switch self {
-            case .favorites:
-                return 0
-            case .listItems:
-                return 0
-            case .archivedItems:
-                return 0
-            }
-        }
-        
-        func editable() -> Bool {
-            if self == .archivedItems {
-                return false
-            }
-            return true
-        }
-    }
+    var tableView: UITableView!
 
+    // hat hier nix verloren
     var realm: Realm!
-    var itemViewController: ItemViewController? = nil
+
+
+    // let itemViewController: ViewControllerProtocoll
+    // und in einem constructor ItemViewController über constructor injecten dingfest machen
+    // var itemViewController: ItemViewController? = nil
+
+
+    // TODO: Refactor it. No selectedItems array!
     var selectedItems: [IndexPath] = [] {
         didSet {
             print("item selected")
         }
     }
 
-
     var notificationToken: NotificationToken?
-    var itemSource: ItemSource = .all
+
+    var dataSource: ItemSource = .default(filters: nil, orders: nil, tags: nil) {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+
+    var itemsViewModel: ItemsViewModel
+
     let searchController = UISearchController(searchResultsController: nil)
+
     let overlayTransitioningDelegate = SortOptionsTransitioningDelegate()
+
+    let tableViewDelegate = ItemsTableViewDelegate()
+    var tableViewDataSource: ItemsTableViewDataSource
+
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 
     deinit {
         notificationToken?.invalidate()
@@ -48,116 +52,47 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // create realm instance for write locking
-        realm = try! Realm()
+        tableViewDataSource = ItemsTableViewDataSource(itemSource: itemSource, tableView: tableView)
+        tableViewDataSource.itemSource = itemSource
+        tableView.delegate = tableViewDelegate
+        tableView.dataSource = tableViewDataSource
+        itemsViewModel = ItemsViewModel(itemSource)
 
         // Transfer an Item to another app with drag (iPad only)
-        tableView.dragDelegate = self
+        // tableView.dragDelegate = self
         // Not implemented: Drag data to Items (iPad only)
         // tableView.dropDelegate = self
-        
-        // Oberves changes from Items and updates the view table
-        notificationToken = itemSource.objects.observe { [weak self] (changes) in
-            guard let tableView = self?.tableView else {
-                return
-            }
-            tableView.reloadData()
-        }
-        configureSearch(false)
+
+        tableView.registerReusableCell(ItemDefaultCell.self)
+
+        // create realm instance for write locking
+//        realm = try! Realm()
+
+
+//        // Oberves changes from Items and updates the view table
+//        notificationToken = itemSource.objects.observe { [weak self] (changes) in
+//            guard let tableView = self?.tableView else { return }
+//            tableView.reloadData()
+//        }
+//        configureSearch(false)
         configureToolbar(false)
         configureNavigationBar(false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-
         super.viewWillTransition(to: size, with: coordinator)
 
         // needs reload data on orientation change because we want redraw the accessory elements
         coordinator.animate(alongsideTransition: nil) { _ in
             if let svc = self.splitViewController, !svc.isCollapsed {
-                self.clearsSelectionOnViewWillAppear = false
+                // self.clearsSelectionOnViewWillAppear = true entspricht etwa:
+                // [myTableView deselectRowAtIndexPath:[myTableView indexPathForSelectedRow] animated:YES];
+//                self.clearsSelectionOnViewWillAppear = false
             } else {
                 // collapsed split view
-                self.clearsSelectionOnViewWillAppear = true
+//                self.clearsSelectionOnViewWillAppear = true
             }
             self.tableView.reloadData()
-        }
-    }
-    
-    // MARK: - Table view data source
-    
-    override func tableView(_ tableView: UITableView,
-                   canMoveRowAt indexPath: IndexPath) -> Bool {
-
-        // It makes no sence to order filter result list
-        if case .filtered(_) = itemSource {
-            return false
-        }
-
-        return true
-    }
-    
-    // Permits the data source to exclude individual rows from being treated as editable.
-    // Use this if certain cells must not be deleted.
-    override func tableView(_ tableView: UITableView,
-                            canEditRowAt indexPath: IndexPath) -> Bool {
-
-        return tableViewSection(for: indexPath.section).editable()
-    }
-
-    // Delegate called when signal Edit or Delete
-    override func tableView(_ tableView: UITableView,
-                            editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        // display only delete control in edit mode. Else display noting special.
-        if tableView.isEditing {
-            return .delete
-        }
-        return .none
-    }
-
-    override func tableView(_ tableView: UITableView,
-                            moveRowAt sourceIndexPath: IndexPath,
-                            to destinationIndexPath: IndexPath) {
-        func item(for indexPath: IndexPath) -> Item {
-            let index = Int(indexPath.row)
-            return itemSource.objects[index]
-        }
-        
-        try! realm.write {
-            let sourceObject = item(for: sourceIndexPath)
-            let destinationObject = item(for: destinationIndexPath)
-            let destinationObjectOrder = destinationObject.sortOrder
-            
-            if sourceIndexPath.row < destinationIndexPath.row {
-                for index in sourceIndexPath.row...destinationIndexPath.row {
-                    let object = itemSource.objects[index]
-                    object.sortOrder -= 1
-                }
-            } else {
-                for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
-                    let object = itemSource.objects[index]
-                    object.sortOrder += 1
-                }
-            }
-            sourceObject.sortOrder = destinationObjectOrder
-        }
-    }
-    
-    // Implemented to allow edit or delete data source entry for row at indexPath
-    override func tableView(_ tableView: UITableView,
-                            commit editingStyle: UITableViewCell.EditingStyle,
-                            forRowAt indexPath: IndexPath) {
-        switch editingStyle {
-        case .delete:
-            // Send delete signal to the table view to direct it to adjust its presentation.
-            tableView.deleteRows(at: [indexPath],
-                                 with: UITableView.RowAnimation.fade)
-        case .insert:
-            // Should avoid complete refresh of the table view and signals inserts only for indexPath
-            break
-        case .none:
-            break
         }
     }
 
@@ -169,14 +104,18 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         if !editing {
             selectedItems = []
         }
-        
+
         tableView.isEditing = editing
-        
+
         configureToolbar(editing)
         configureNavigationBar(editing)
     }
 
-    func configureToolbar(_ editing: Bool) {
+
+
+    // MARK: - Managaging view configuration
+
+    fileprivate func configureToolbar(_ editing: Bool) {
         if editing {
             let moreActionItem = UIBarButtonItem(barButtonSystemItem: .action,
                                                  target: self,
@@ -210,7 +149,7 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
 
-    func configureNavigationBar(_ editing: Bool) {
+    fileprivate func configureNavigationBar(_ editing: Bool) {
         if editing {
             let selectAllButton = UIBarButtonItem(title: NSLocalizedString("Select All", comment: "Nav Bar Item: Select All"),
                                                   style: .plain,
@@ -230,14 +169,17 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Items"
-    }
-    
     // MARK: - Navigation
 
-    // prevents fireing segue when table view is in editing
+    /// Defines supported segues
+    enum SegueIdentifier: String {
+        case itemPresentSegue = "itemPresentSegue"
+        case itemAddSegue = "itemAddSegue"
+        case itemsSortOptionsSegue = "itemsSortOptionsSegue"
+    }
+
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        /// Prevents fireing segue when table view is in editing
         switch segueIdentifier(for: identifier) {
         case .itemPresentSegue:
             return !isEditing
@@ -248,19 +190,13 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
     
-    enum SegueIdentifier: String {
-        case itemPresentSegue = "itemPresentSegue"
-        case itemAddSegue = "itemAddSegue"
-        case itemsSortOptionsSegue = "itemsSortOptionsSegue"
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segueIdentifier(for: segue) {
         case .itemPresentSegue:
             guard let vc = segue.destination.children.first as? ItemViewController else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
-            guard let cell = sender as? ItemCell else {
+            guard let cell = sender as? UITableViewCell else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
             guard let indexPath = tableView.indexPath(for: cell) else {
@@ -274,7 +210,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
             vc.currentItem = selectedItem
         case .itemAddSegue:
             if let vc = segue.destination as? ItemUpdateTableViewController {
-                print("Add Item")
                 vc.itemSource = itemSource
                 vc.currentItem = nil
             }
@@ -286,7 +221,7 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
 
-    // MARK: Actions
+    // MARK: Managing actions
 
     @objc func editAction(_ sender: UIBarButtonItem) {
         isEditing = true
@@ -300,12 +235,15 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         performSegue(segueIdentifier: .itemAddSegue, sender: sender)
     }
 
-    // Batch action: delete selectedItems
+    /// Deletes Items in batch mode. Delete selectedItems
     @objc func deleteAction(_ sender: UIBarButtonItem) {
         deleteItems()
     }
 
     @objc func selectAllAction(_ sender: UIBarButtonItem) {
+
+        // TODO: das kann ggf. in eine eigene TableView extension
+
         let totalRows = tableView.numberOfRows(inSection: 0)
         for row in 0..<totalRows {
             tableView.selectRow(at: IndexPath(row: row, section: 0) as IndexPath,
@@ -367,96 +305,21 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
 
 }
 
-// MARK: - table view data source delegates
-extension ItemsTableViewController {
+// MARK: - Search Results Updating
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
-//        if section == 0 { return 0 }
-//        if section > 1 { return 0 }
-
-        let count = itemSource.objects.count
-        
-        if (count > 0) {
-            tableView.restore()
-        }
-        else {
-            tableView.setEmptyMessage(NSLocalizedString("No items found.",
-                                                        comment: "Empty Table Message"))
-        }
-
-        return count;
-    }
-    
-    override func tableView(_ tableView: UITableView,
-                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.reusableIdentifier,
-                                                 for: indexPath) as! ItemCell
-
-        // configure (hides) disclosure indicator when
-        // device is in collapsted in split view
-        func configureAccessoryType(for cell: UITableViewCell ) {
-            if let svc = splitViewController, svc.isCollapsed {
-                cell.accessoryType = .disclosureIndicator
-            }
-            else {
-                cell.accessoryType = .none
-            }
-        }
-        
-        func confiureSelectedCell(for cell: UITableViewCell) {
-            let backgroundView = UIView()
-            backgroundView.backgroundColor = UIColor.darkGray
-            cell.selectedBackgroundView = backgroundView
-        }
-        
-        configureAccessoryType(for: cell)
-        confiureSelectedCell(for: cell)
-
-        cell.item = itemSource.objects[indexPath.row]
-        
-        return cell
-    }
-    
-    override func tableView (_ tableView: UITableView,
-                    didSelectRowAt indexPath: IndexPath) {
-        if !isEditing {
-            return
-        }
-
-        selectedItems.append(indexPath)
-    }
-    
-    // manages items selected in table editing
-    override func tableView(_ tableView: UITableView,
-                            didDeselectRowAt indexPath: IndexPath) {
-        if !isEditing {
-            return
-        }
-        NotificationCenter.default.post(Notification(name: .didDeselectItem))
-
-        // remove indexPath element from selected items
-        selectedItems = selectedItems.filter { $0 != indexPath }
-    }
-    
-    // configure a swipe menu
-    override func tableView(_ tableView: UITableView,
-                            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
-        -> UISwipeActionsConfiguration? {
-        return swipeActionConfiguration(indexPath: indexPath)
-    }
-
-}
-
-extension ItemsTableViewController: UISearchResultsUpdating {
+extension ItemsViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         if searchController.isActive {
-            itemSource = .filtered(searchController.searchBar.text!)
+
+//            let filter1 = ItemSource.Filter.ids(["x-1", "x-2"])
+            // sind wir archive oder default?
+//            let filter = ItemSource.Filter(filter: searchController.searchBar.text!)
+
+//            itemSource(filter)
+//            itemSource.Filter.name(searchController.searchBar.text!)
+
+//            itemSource = .filtered(searchController.searchBar.text!)
         }
         else {
             itemSource = .all
@@ -464,14 +327,14 @@ extension ItemsTableViewController: UISearchResultsUpdating {
         tableView.reloadData()
     }
     
-    // MARK: - Private instance methods
-    
     private func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
 }
 
-extension ItemsTableViewController: UISearchBarDelegate {
+// MARK: Search Bar Delegates
+
+extension ItemsViewController: UISearchBarDelegate {
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         return true
@@ -483,16 +346,13 @@ extension ItemsTableViewController: UISearchBarDelegate {
 
 }
 
-extension ItemsTableViewController {
+extension ItemsViewController {
 
     // das könnte in eine Extension von UIViewController, sofern wir
     // eine strong reference auf overlayTransitioningDelegate verwalten können
-    // Außerdem muss gegen ein Protokoll gearbeitet werden...
     private func customOverlay(prepare viewController: SortOptionsController) {
         viewController.transitioningDelegate = overlayTransitioningDelegate
-
         viewController.modalPresentationStyle = .custom
-//        viewController.modalPresentationStyle = .overFullScreen
     }
 
     private func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
@@ -577,36 +437,16 @@ extension ItemsTableViewController {
         searchController.isActive = true
     }
 
-    func swipeActionConfiguration(indexPath: IndexPath) -> UISwipeActionsConfiguration {
-        // swipe action: delete
-        let deleteAction = UIContextualAction(style: .destructive, title: "delete", handler: {_,_,_ in
-            self.selectedItems.append(indexPath)
-            //???
-            self.setEditing(true, animated: true)
-            
-            self.deleteItems()
-        })
-        deleteAction.backgroundColor = UIColor.red
-        deleteAction.image = UIImage(named: "trash")
-        
-        // swipe action: favorit
-        let favoriteAction = UIContextualAction(style: .normal,
-                                                title: "favorite",
-                                                handler: { _,_,_ in
-                                                    self.selectedItems.append(indexPath)
-                                                    self.favoriteItems()
-        })
-        favoriteAction.backgroundColor = UIColor.orange
-        favoriteAction.image = UIImage(named: "starfilled")
-        
-        return UISwipeActionsConfiguration(actions: [favoriteAction, deleteAction])
-    }
     
 }
 
-extension ItemsTableViewController: UIPopoverPresentationControllerDelegate {
+// MARK: - UIPopoverPresentationControllerDelegate
+
+extension ItemsViewController: UIPopoverPresentationControllerDelegate {
+
     func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
         // Force popover style
         return UIModalPresentationStyle.overCurrentContext
     }
+
 }

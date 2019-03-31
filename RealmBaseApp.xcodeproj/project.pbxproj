@@ -19,6 +19,7 @@
 		247F8508218C625400E8B279 /* UISegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F8507218C625400E8B279 /* UISegmentedControl.swift */; };
 		247F850C218CB3F900E8B279 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F850B218CB3F900E8B279 /* UIColor.swift */; };
 		24AB60762191876B00576FFE /* Identifiyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AB60752191876B00576FFE /* Identifiyable.swift */; };
+		24BC88D721D7A80E00200BAF /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BC88D621D7A80E00200BAF /* CustomViewController.swift */; };
 		24D33D2C2199B4FA001B7B2F /* SortOptionsPresentViewControllerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D33D292199B4F9001B7B2F /* SortOptionsPresentViewControllerAnimator.swift */; };
 		24D33D2D2199B4FA001B7B2F /* SortOptionsTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D33D2A2199B4F9001B7B2F /* SortOptionsTransitioningDelegate.swift */; };
 		24D33D2E2199B4FA001B7B2F /* SortOptionsPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D33D2B2199B4FA001B7B2F /* SortOptionsPresentationController.swift */; };
@@ -67,6 +68,8 @@
 		247F8507218C625400E8B279 /* UISegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControl.swift; sourceTree = "<group>"; };
 		247F850B218CB3F900E8B279 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		24AB60752191876B00576FFE /* Identifiyable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiyable.swift; sourceTree = "<group>"; };
+		24BC88D421D7A16000200BAF /* Reusable.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Reusable.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		24BC88D621D7A80E00200BAF /* CustomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
 		24D33D292199B4F9001B7B2F /* SortOptionsPresentViewControllerAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortOptionsPresentViewControllerAnimator.swift; sourceTree = "<group>"; };
 		24D33D2A2199B4F9001B7B2F /* SortOptionsTransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortOptionsTransitioningDelegate.swift; sourceTree = "<group>"; };
 		24D33D2B2199B4FA001B7B2F /* SortOptionsPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortOptionsPresentationController.swift; sourceTree = "<group>"; };
@@ -172,6 +175,7 @@
 			children = (
 				24D33D2F2199BD66001B7B2F /* SortOptions */,
 				24F14D34214CF77600C3CC36 /* AppDelegate.swift */,
+				24BC88D621D7A80E00200BAF /* CustomViewController.swift */,
 				24F4978721836ECE00955AF7 /* Item.swift */,
 				24078442216FCBB900D5DC45 /* MainSplitViewController.swift */,
 				24F14D46214CFD6500C3CC36 /* ItemsTableViewController.swift */,
@@ -209,6 +213,7 @@
 		FDD7A8E5E388AF186E6DE9B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				24BC88D421D7A16000200BAF /* Reusable.framework */,
 				247F84F92188E76500E8B279 /* CloudKit.framework */,
 				180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */,
 				B6D0186F34FD7603935E4B28 /* Pods_RealmBaseAppTests.framework */,
@@ -440,6 +445,7 @@
 				24F14D51214D0FDD00C3CC36 /* ItemCell.swift in Sources */,
 				24F14D4D214D07D700C3CC36 /* DefaultRealm.swift in Sources */,
 				247F8508218C625400E8B279 /* UISegmentedControl.swift in Sources */,
+				24BC88D721D7A80E00200BAF /* CustomViewController.swift in Sources */,
 				24AB60762191876B00576FFE /* Identifiyable.swift in Sources */,
 				24D33D2C2199B4FA001B7B2F /* SortOptionsPresentViewControllerAnimator.swift in Sources */,
 			);
@@ -645,7 +651,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L79BTFY6FV;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -666,7 +672,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L79BTFY6FV;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
