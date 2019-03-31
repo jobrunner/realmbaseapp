@@ -10,5 +10,4 @@ end
 
 target 'RealmBaseAppTests' do
   use_frameworks!
-  pod 'EarlGrey'
 end

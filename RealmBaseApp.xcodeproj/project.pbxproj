@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06DEAB6088FF303E81CAB726 /* EarlGrey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709931805DA8BBB5D16AA383 /* EarlGrey.swift */; };
 		24078443216FCBB900D5DC45 /* MainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24078442216FCBB900D5DC45 /* MainSplitViewController.swift */; };
 		24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */; };
 		2461C1082173DDC9009432CE /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2461C1072173DDC9009432CE /* UITableView.swift */; };
@@ -106,7 +105,6 @@
 		24F4978921837F9400955AF7 /* SegueHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegueHandler.swift; sourceTree = "<group>"; };
 		24F4978B21838D0200955AF7 /* TableViewSectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionHandler.swift; sourceTree = "<group>"; };
 		24F4978D2184C02800955AF7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
-		709931805DA8BBB5D16AA383 /* EarlGrey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EarlGrey.swift; sourceTree = "<group>"; };
 		9435D86E099699B70556DB40 /* Pods-RealmBaseAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseAppTests/Pods-RealmBaseAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		972B2AF8FC3F82E0A90005FD /* EarlGrey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EarlGrey.framework; path = Pods/EarlGrey/EarlGrey/EarlGrey.framework; sourceTree = SOURCE_ROOT; };
 		9990476C01AD892C4D0B50FD /* Pods-RealmBaseApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -142,7 +140,6 @@
 			children = (
 				24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */,
 				24581FDE217BDA2200FB221F /* Info.plist */,
-				709931805DA8BBB5D16AA383 /* EarlGrey.swift */,
 			);
 			path = RealmBaseAppTests;
 			sourceTree = "<group>";
@@ -254,7 +251,6 @@
 				24581FD6217BDA2200FB221F /* Sources */,
 				24581FD7217BDA2200FB221F /* Frameworks */,
 				24581FD8217BDA2200FB221F /* Resources */,
-				29377A34687A4C5AC2EEA1AC /* [CP] Embed Pods Frameworks */,
 				8424BFB135AC981E10A815ED /* EarlGrey Copy Files */,
 			);
 			buildRules = (
@@ -380,24 +376,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		29377A34687A4C5AC2EEA1AC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RealmBaseAppTests/Pods-RealmBaseAppTests-frameworks.sh",
-				"${PODS_ROOT}/EarlGrey/EarlGrey/EarlGrey.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EarlGrey.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RealmBaseAppTests/Pods-RealmBaseAppTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		90E6B54FBEBD8BEE6F79894F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -442,7 +420,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */,
-				06DEAB6088FF303E81CAB726 /* EarlGrey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
