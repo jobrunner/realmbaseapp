@@ -158,6 +158,8 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
             break
         case .none:
             break
+        @unknown default:
+            break
         }
     }
 

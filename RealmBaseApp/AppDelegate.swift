@@ -53,8 +53,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        let dict = userInfo as! [String: NSObject]
-        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
+        guard let dict = userInfo as? [String: NSObject],
+            let notification = CKNotification(fromRemoteNotificationDictionary: dict) else { return }
         
         if (notification.subscriptionID == IceCreamConstant.cloudKitSubscriptionID) {
 

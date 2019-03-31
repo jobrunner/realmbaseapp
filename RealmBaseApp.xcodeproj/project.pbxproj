@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06DEAB6088FF303E81CAB726 /* EarlGrey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709931805DA8BBB5D16AA383 /* EarlGrey.swift */; };
 		24078443216FCBB900D5DC45 /* MainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24078442216FCBB900D5DC45 /* MainSplitViewController.swift */; };
 		24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */; };
 		2461C1082173DDC9009432CE /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2461C1072173DDC9009432CE /* UITableView.swift */; };
@@ -38,6 +39,8 @@
 		24F4978C21838D0200955AF7 /* TableViewSectionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F4978B21838D0200955AF7 /* TableViewSectionHandler.swift */; };
 		24F4978E2184C02800955AF7 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F4978D2184C02800955AF7 /* Notification.swift */; };
 		62F66CD72BE7A7D97442421C /* Pods_RealmBaseAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D0186F34FD7603935E4B28 /* Pods_RealmBaseAppTests.framework */; };
+		748D6098E9C6A0882563DA8B /* EarlGrey.framework in EarlGrey Copy Files */ = {isa = PBXBuildFile; fileRef = 972B2AF8FC3F82E0A90005FD /* EarlGrey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E030A513D1F229987D6D243E /* EarlGrey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 972B2AF8FC3F82E0A90005FD /* EarlGrey.framework */; };
 		FD6632D882EC817F69667110 /* Pods_RealmBaseApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +53,20 @@
 			remoteInfo = RealmBaseApp;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8424BFB135AC981E10A815ED /* EarlGrey Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(TEST_HOST)/../";
+			dstSubfolderSpec = 0;
+			files = (
+				748D6098E9C6A0882563DA8B /* EarlGrey.framework in EarlGrey Copy Files */,
+			);
+			name = "EarlGrey Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RealmBaseApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,7 +106,9 @@
 		24F4978921837F9400955AF7 /* SegueHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegueHandler.swift; sourceTree = "<group>"; };
 		24F4978B21838D0200955AF7 /* TableViewSectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionHandler.swift; sourceTree = "<group>"; };
 		24F4978D2184C02800955AF7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		709931805DA8BBB5D16AA383 /* EarlGrey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EarlGrey.swift; sourceTree = "<group>"; };
 		9435D86E099699B70556DB40 /* Pods-RealmBaseAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseAppTests/Pods-RealmBaseAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		972B2AF8FC3F82E0A90005FD /* EarlGrey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EarlGrey.framework; path = Pods/EarlGrey/EarlGrey/EarlGrey.framework; sourceTree = SOURCE_ROOT; };
 		9990476C01AD892C4D0B50FD /* Pods-RealmBaseApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp.release.xcconfig"; sourceTree = "<group>"; };
 		ABDEE97463CFB83DAE0A154F /* Pods-RealmBaseAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseAppTests/Pods-RealmBaseAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ABE48FE4499375834E4F3C53 /* Pods-RealmBaseApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmBaseApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -102,6 +121,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				62F66CD72BE7A7D97442421C /* Pods_RealmBaseAppTests.framework in Frameworks */,
+				E030A513D1F229987D6D243E /* EarlGrey.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +142,7 @@
 			children = (
 				24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */,
 				24581FDE217BDA2200FB221F /* Info.plist */,
+				709931805DA8BBB5D16AA383 /* EarlGrey.swift */,
 			);
 			path = RealmBaseAppTests;
 			sourceTree = "<group>";
@@ -217,6 +238,7 @@
 				247F84F92188E76500E8B279 /* CloudKit.framework */,
 				180DAB409328DF9265D41A8E /* Pods_RealmBaseApp.framework */,
 				B6D0186F34FD7603935E4B28 /* Pods_RealmBaseAppTests.framework */,
+				972B2AF8FC3F82E0A90005FD /* EarlGrey.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -233,6 +255,7 @@
 				24581FD7217BDA2200FB221F /* Frameworks */,
 				24581FD8217BDA2200FB221F /* Resources */,
 				29377A34687A4C5AC2EEA1AC /* [CP] Embed Pods Frameworks */,
+				8424BFB135AC981E10A815ED /* EarlGrey Copy Files */,
 			);
 			buildRules = (
 			);
@@ -275,11 +298,12 @@
 				TargetAttributes = {
 					24581FD9217BDA2200FB221F = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = 24F14D30214CF77600C3CC36;
 					};
 					24F14D30214CF77600C3CC36 = {
 						CreatedOnToolsVersion = 9.4.1;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -418,6 +442,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */,
+				06DEAB6088FF303E81CAB726 /* EarlGrey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,7 +524,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RealmBaseApp.app/RealmBaseApp";
 			};
@@ -522,7 +547,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RealmBaseApp.app/RealmBaseApp";
 			};
@@ -579,7 +604,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -633,7 +658,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -658,7 +683,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -679,7 +704,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
