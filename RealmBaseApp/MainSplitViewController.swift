@@ -6,7 +6,6 @@ class MainSplitViewController: UISplitViewController {
         super.viewDidLoad()
         configureSplitViewController()
     }
-
 }
 
 extension MainSplitViewController {

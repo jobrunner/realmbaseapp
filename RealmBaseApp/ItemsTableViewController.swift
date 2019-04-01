@@ -36,7 +36,6 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         }
     }
 
-
     var notificationToken: NotificationToken?
     var itemSource: ItemSource = .all
     let searchController = UISearchController(searchResultsController: nil)
