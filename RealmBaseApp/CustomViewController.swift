@@ -8,10 +8,21 @@ class CustomViewController: UIViewController {
 
     var viewController : UISplitViewController!
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .fade
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return false
+    }
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         overrideHorizontalSizeClass()
     }
-
 }
 
 extension CustomViewController {
