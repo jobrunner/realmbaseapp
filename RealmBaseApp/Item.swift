@@ -2,6 +2,54 @@ import Foundation
 import RealmSwift
 import IceCream
 
+enum DataSource<T: Object> {
+    case all
+    case filtered(String?)
+
+    var objects: Results<T> {
+        let realm = try! Realm()
+        return realm.objects(T.self)
+            .filter(self.predicate)
+            .sorted(by: self.sortDescriptors)
+    }
+
+    var predicate: NSPredicate {
+        switch self  {
+        case .all:
+            return T.defaultPredicate
+        case .filtered(let searchText):
+            guard let searchText = searchText else {
+                return NSPredicate(value: false)
+            }
+
+            return NSPredicate(format: "(isDeleted == false) AND (name CONTAINS[cd] %@)", searchText)
+        }
+    }
+
+    var sortDescriptors: [SortDescriptor] {
+
+        // manualy -> sortOrder
+        // name    -> name
+        // date    -> date
+
+        // und je nachdem, ob die TableView Favoriten in einer eigenen Section gruppiert dargestellt werden sollen
+        // muss zuerst absteigend nach favorite sortiert werden (true oben, false unten)
+
+        switch self {
+        case .all:
+            return Item.defaultSortDescriptors
+        case .filtered(_):
+            return [SortDescriptor(keyPath: "name", ascending: true),
+                    SortDescriptor(keyPath: "sortOrder", ascending: true)]
+        }
+    }
+}
+
+func bla() {
+    let mapSource = DataSource<Map>.all
+    let maps = mapSource.objects.count
+}
+
 enum ItemSource {
     case all
     case filtered(String?)
@@ -58,7 +106,7 @@ protocol Managed: class {
 }
 
 // default implementation of Managed protocol
-extension Managed {
+extension Object: Managed {
     
     static var defaultSortDescriptors: [SortDescriptor] {
         return []
@@ -71,6 +119,21 @@ extension Managed {
 
 // MARK: Realms
 
+final class Map: Object {
+
+    @objc dynamic var id: String = UUID().uuidString
+    @objc dynamic var name: String = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var sortOrder: Int = 0
+    @objc dynamic var isArchived: Bool = false
+    @objc dynamic var isDeleted: Bool = false
+    let items = List<Item>()
+
+    override static func primaryKey() -> String? {
+        return "id"
+    }
+}
+
 final class Item: Object {
 
     @objc dynamic var id: String = UUID().uuidString
@@ -79,6 +142,8 @@ final class Item: Object {
     @objc dynamic var sortOrder: Int = 0
     @objc dynamic var isArchived: Bool = false
     @objc dynamic var isDeleted: Bool = false
+    @objc dynamic var map: Map?
+
     let tags = List<Tag>()
     let keyValues = List<KeyValue>()
     
@@ -133,6 +198,7 @@ final class KeyValue: Object {
 }
 
 // Adds the Managed protocol (includes default implementation) to Item Realm
+/*
 extension Item: Managed {
 
     static var defaultSortDescriptors: [SortDescriptor] {
@@ -143,19 +209,22 @@ extension Item: Managed {
         return NSPredicate(format: "isDeleted = false")
     }
 }
+*/
 
 // Adds the Managed protocol (includes default implementation) to Tag Realm
-extension Tag: Managed {
+//extension Tag: Managed {
+//
+//    static var defaultSortDescriptors: [SortDescriptor] {
+//        return [SortDescriptor(keyPath: "name", ascending: true)]
+//    }
+//
+//    static var defaultPredicate: NSPredicate {
+//        return NSPredicate(format: "isDeleted = false")
+//    }
+//}
 
-    static var defaultSortDescriptors: [SortDescriptor] {
-        return [SortDescriptor(keyPath: "name", ascending: true)]
-    }
-
-    static var defaultPredicate: NSPredicate {
-        return NSPredicate(format: "isDeleted = false")
-    }
-
-}
+extension Map: CKRecordConvertible {}
+extension Map: CKRecordRecoverable {}
 
 extension Item: CKRecordConvertible {}
 extension Item: CKRecordRecoverable {}

@@ -5,7 +5,7 @@ import RealmSwift
 struct DefaultRealm {
 
     /// Current version of the realm. It must be incremented when changes made to any realm object.
-    let currentVersion: UInt64 = 5
+    let currentVersion: UInt64 = 6
 
     /// Only for debugging; returning the concrete file url of the local realm database file.
     var fileUrl: URL? {
