@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             SyncObject<Item>(),
             SyncObject<Tag>(),
             SyncObject<KeyValue>()
-        ])
+        ], databaseScope: .private)
         
         application.registerForRemoteNotifications()
 
@@ -53,11 +53,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        guard let dict = userInfo as? [String: NSObject],
-            let notification = CKNotification(fromRemoteNotificationDictionary: dict) else { return }
-        
-        if (notification.subscriptionID == IceCreamConstant.cloudKitSubscriptionID) {
 
+        guard let dict = userInfo as? [String: NSObject]  else {
+            completionHandler(.failed)
+            return
+        }
+        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
+        guard let subscriptionId = notification.subscriptionID else {
+            // ???
+            completionHandler(.noData)
+            return
+        }
+
+        if subscriptionId == IceCreamSubscription.cloudKitPrivateDatabaseSubscriptionID.rawValue {
             NotificationCenter.default.post(name: Notifications.cloudKitDataDidChangeRemotely.name,
                                             object: nil,
                                             userInfo: userInfo)
