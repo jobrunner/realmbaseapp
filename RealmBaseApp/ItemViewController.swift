@@ -33,7 +33,7 @@ class ItemViewController: UITableViewController, SegueHandler {
     @IBOutlet weak var idLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var sortOrderLabel: UILabel!
-    @IBOutlet weak var favoriteActionItem: UISwitch!
+    @IBOutlet weak var favoriteIconLabel: UILabel!
     @IBOutlet weak var editActionItem: UIBarButtonItem!
     
     override func viewDidLoad() {
@@ -120,8 +120,7 @@ extension ItemViewController {
         idLabel.text = item.id
         nameLabel.text = item.name
         sortOrderLabel.text = String(item.sortOrder)
-        favoriteActionItem.isHidden = false
-        favoriteActionItem.setOn(item.favorite, animated: true)
+        favoriteIconLabel.text = item.favorite ? "✔︎" : "✘"
     }
 
     func observeToNotifications() {
