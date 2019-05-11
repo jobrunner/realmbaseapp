@@ -49,14 +49,12 @@ extension ItemSource {
                     SortDescriptor(keyPath: "sortOrder", ascending: true)]
         }
     }
-    
 }
 
 protocol Managed: class {
     
     static var defaultSortDescriptors: [SortDescriptor] { get }
     static var defaultPredicate: NSPredicate { get }
-
 }
 
 // default implementation of Managed protocol
@@ -69,7 +67,6 @@ extension Managed {
     static var defaultPredicate: NSPredicate {
         return NSPredicate(value: true)
     }
-
 }
 
 // MARK: Realms
@@ -88,7 +85,6 @@ final class Item: Object {
     override static func primaryKey() -> String? {
         return "id"
     }
-
 }
 
 // so wird jedesmal ein neues Tag-Object (primary key!) angelegt. Das wollen wir ja gar nicht.
@@ -110,7 +106,6 @@ final class Tag: Object {
         self.id = tag.uppercased()
         self.name = tag
     }
-
 }
 
 final class KeyValue: Object {
@@ -139,7 +134,7 @@ final class KeyValue: Object {
 
 // Adds the Managed protocol (includes default implementation) to Item Realm
 extension Item: Managed {
-    
+
     static var defaultSortDescriptors: [SortDescriptor] {
         return [SortDescriptor(keyPath: "sortOrder", ascending: true)]
     }
@@ -147,7 +142,6 @@ extension Item: Managed {
     static var defaultPredicate: NSPredicate {
         return NSPredicate(format: "isDeleted = false")
     }
-
 }
 
 // Adds the Managed protocol (includes default implementation) to Tag Realm
@@ -164,13 +158,10 @@ extension Tag: Managed {
 }
 
 extension Item: CKRecordConvertible {}
-
 extension Item: CKRecordRecoverable {}
 
 extension Tag: CKRecordConvertible {}
-
 extension Tag: CKRecordRecoverable {}
 
 extension KeyValue: CKRecordConvertible {}
-
 extension KeyValue: CKRecordRecoverable {}
