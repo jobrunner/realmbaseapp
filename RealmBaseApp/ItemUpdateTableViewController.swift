@@ -75,7 +75,7 @@ class ItemUpdateTableViewController: UITableViewController {
             currentItem.sortOrder = sortOrder
             // currentItem.tags.append(tag)
             
-            realm.add(currentItem, update: true)
+            realm.add(currentItem, update: .all)
         }
         dismiss(animated: true, completion: nil)
     }
