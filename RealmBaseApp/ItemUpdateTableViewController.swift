@@ -52,26 +52,27 @@ class ItemUpdateTableViewController: UITableViewController {
     }
     
     @IBAction func saveAction(_ sender: Any) {
-        if currentItem == nil {
+        var sortOrder = 0
+        if isNewRecord {
+            if let maxSortOrder =  realm.objects(Item.self).max(ofProperty: "sortOrder") as Int? {
+                sortOrder = maxSortOrder + 1
+            }
             currentItem = Item()
+        } else {
+            if let item = currentItem {
+                sortOrder = item.sortOrder
+            }
         }
 
-        guard let currentItem = currentItem
-            else {
-                fatalError("Could not save Item")
-        }
+        guard let currentItem = currentItem else { fatalError("Could not save Item") }
 
         try! realm.write {
-            if isNewRecord {
-                if let maxSortOrder =  realm.objects(Item.self).max(ofProperty: "sortOrder") as Int? {
-                    currentItem.sortOrder = maxSortOrder + 1
-                }
-            }
             // let tag = Tag(tag: "Dienstleister");
             // realm.add(tag, update: true)
     
             currentItem.name = nameTextField.text!
             currentItem.favorite = favoriteSwitchItem.isOn
+            currentItem.sortOrder = sortOrder
             // currentItem.tags.append(tag)
             
             realm.add(currentItem, update: true)
@@ -121,7 +122,6 @@ class ItemUpdateTableViewController: UITableViewController {
     @IBAction func favoriteSwitchValueChanged(_ sender: UISwitch) {
         saveButton.isEnabled = nameTextField.text?.count ?? 0 > 0
     }
-
 }
 
 extension ItemUpdateTableViewController {
@@ -138,5 +138,4 @@ extension ItemUpdateTableViewController {
             nameTextField.text = NSLocalizedString("New default name", comment: "TextFieldDefaults")
         }
     }
-
 }

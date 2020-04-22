@@ -32,7 +32,11 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     var itemViewController: ItemViewController? = nil
     var selectedItems: [IndexPath] = [] {
         didSet {
-            print("item selected")
+            if selectedItems.isEmpty {
+                print("keine items mehr selected")
+            } else {
+                print("items selected. Now \(selectedItems.count)")
+            }
         }
     }
 
@@ -88,13 +92,13 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     
     override func tableView(_ tableView: UITableView,
                    canMoveRowAt indexPath: IndexPath) -> Bool {
-
-        // It makes no sence to order filter result list
-        if case .filtered(_) = itemSource {
+        // It prevents order changes when table is filtered
+        switch itemSource {
+        case .filtered(_):
             return false
+        default:
+            return true
         }
-
-        return true
     }
     
     // Permits the data source to exclude individual rows from being treated as editable.
@@ -108,16 +112,18 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
     // Delegate called when signal Edit or Delete
     override func tableView(_ tableView: UITableView,
                             editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        // display only delete control in edit mode. Else display noting special.
+        // display only delete control in edit mode.
         if tableView.isEditing {
             return .delete
         }
+        // Else display noting special.
         return .none
     }
 
     override func tableView(_ tableView: UITableView,
                             moveRowAt sourceIndexPath: IndexPath,
                             to destinationIndexPath: IndexPath) {
+
         func item(for indexPath: IndexPath) -> Item {
             let index = Int(indexPath.row)
             return itemSource.objects[index]
@@ -150,15 +156,16 @@ class ItemsTableViewController: UITableViewController, SegueHandler, TableViewSe
         switch editingStyle {
         case .delete:
             // Send delete signal to the table view to direct it to adjust its presentation.
-            tableView.deleteRows(at: [indexPath],
-                                 with: UITableView.RowAnimation.fade)
-        case .insert:
-            // Should avoid complete refresh of the table view and signals inserts only for indexPath
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        default:
             break
-        case .none:
-            break
-        @unknown default:
-            break
+//        case .insert:
+//            // Should avoid complete refresh of the table view and signals inserts only for indexPath
+//            break
+//        case .none:
+//            break
+//        @unknown default:
+//            break
         }
     }
 
@@ -377,20 +384,15 @@ extension ItemsTableViewController {
     
     override func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-//        if section == 0 { return 0 }
-//        if section > 1 { return 0 }
-
         let count = itemSource.objects.count
-        
         if (count > 0) {
             tableView.restore()
-        }
-        else {
+        } else {
             tableView.setEmptyMessage(NSLocalizedString("No items found.",
                                                         comment: "Empty Table Message"))
         }
 
-        return count;
+        return count
     }
     
     override func tableView(_ tableView: UITableView,
@@ -403,8 +405,7 @@ extension ItemsTableViewController {
         func configureAccessoryType(for cell: UITableViewCell ) {
             if let svc = splitViewController, svc.isCollapsed {
                 cell.accessoryType = .disclosureIndicator
-            }
-            else {
+            } else {
                 cell.accessoryType = .none
             }
         }
@@ -458,8 +459,7 @@ extension ItemsTableViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if searchController.isActive {
             itemSource = .filtered(searchController.searchBar.text!)
-        }
-        else {
+        } else {
             itemSource = .all
         }
         tableView.reloadData()
@@ -481,10 +481,36 @@ extension ItemsTableViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
     }
-
 }
 
 extension ItemsTableViewController {
+
+    enum OperationError: Error {
+        case deletion(Int)
+        case insertion(Int)
+        case moving
+
+        var severity: ToasterStyle {
+            return .warning
+        }
+        var message: String {
+            switch self {
+            case .deletion(let number):
+                if number == 1 {
+                    return "Failed to remove Item"
+                } else {
+                    return "Failed to remove Items"
+                }
+            case .insertion(let number):
+                if number == 1 {
+                    return "Failed to insert Item"
+                } else {
+                    return "Failed to insert Items"
+                }
+            case .moving: return "Failed to move Item"
+            }
+        }
+    }
 
     // das könnte in eine Extension von UIViewController, sofern wir
     // eine strong reference auf overlayTransitioningDelegate verwalten können
@@ -496,7 +522,8 @@ extension ItemsTableViewController {
 //        viewController.modalPresentationStyle = .overFullScreen
     }
 
-    private func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
+    /// Returns only those objects that are selected by the IndexPath elements.
+    fileprivate func filtered<T>(objects: Results<T>, filter indexPaths: [IndexPath]) -> [T] {
         let indices: [Int] = indexPaths.map { indexPath in
             return Int(indexPath.row)
         }
@@ -506,22 +533,33 @@ extension ItemsTableViewController {
     }
 
     func deleteItems() {
+        if selectedItems.isEmpty { return }
+
         let objects = filtered(objects: itemSource.objects, filter: selectedItems)
-        try! realm.write {
-            for object in objects {
-                object.isDeleted = true
+
+        tableView.beginUpdates()
+        do {
+            try realm.write {
+                for object in objects {
+                    object.isDeleted = true
+                }
+                self.tableView.deleteRows(at: selectedItems, with: .automatic)
             }
+        } catch {
+            let toaster = Toaster(view: self.view)
+            let customError = OperationError.deletion(objects.count)
+            toaster.trigger(message: customError.message, style: customError.severity)
         }
-        self.tableView.beginUpdates()
-        self.tableView.deleteRows(at: self.selectedItems, with: .automatic)
-        self.tableView.endUpdates()
-        
+        tableView.endUpdates()
+
         // reset indexPaths for selected items
         selectedItems = []
         isEditing = false
     }
     
     func favoriteItems() {
+        if selectedItems.isEmpty { return }
+
         let objects = filtered(objects: itemSource.objects, filter: selectedItems)
         try! realm.write {
             for object in objects {

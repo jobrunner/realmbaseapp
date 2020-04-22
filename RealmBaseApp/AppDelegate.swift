@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Configure Models that should be synchronized
         // with iCloud using IceCream
         syncEngine = SyncEngine(objects: [
+            SyncObject<Map>(),
             SyncObject<Item>(),
             SyncObject<Tag>(),
             SyncObject<KeyValue>()
@@ -53,19 +54,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-
         guard let dict = userInfo as? [String: NSObject]  else {
             completionHandler(.failed)
             return
         }
-        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
-        guard let subscriptionId = notification.subscriptionID else {
-            // ???
-            completionHandler(.noData)
-            return
-        }
 
-        if subscriptionId == IceCreamSubscription.cloudKitPrivateDatabaseSubscriptionID.rawValue {
+        let notification = CKNotification(fromRemoteNotificationDictionary: dict)
+
+        if let subscriptionID = notification.subscriptionID, IceCreamSubscription.allIDs.contains(subscriptionID) {
             NotificationCenter.default.post(name: Notifications.cloudKitDataDidChangeRemotely.name,
                                             object: nil,
                                             userInfo: userInfo)

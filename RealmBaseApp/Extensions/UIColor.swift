@@ -11,7 +11,6 @@ extension UIColor {
      ```
      */
     convenience init(hex: UInt32, alpha: CGFloat = 1.0) {
-        
         let red = CGFloat((hex & 0xff0000) >> 16) / 255.0
         let green = CGFloat((hex & 0xff00) >> 8) / 255.0
         let blue = CGFloat((hex & 0xff) >> 0) / 255.0
@@ -30,7 +29,6 @@ extension UIColor {
      ```
      */
     convenience init(fromString: String, alpha: CGFloat = 1.0) {
-        
         let scanner: Scanner = Scanner(string: fromString)
         scanner.scanLocation = 1
         
@@ -39,5 +37,4 @@ extension UIColor {
         
         self.init(hex: value, alpha: alpha)
     }
-
 }

@@ -100,27 +100,24 @@ extension ItemSource {
 }
 
 protocol Managed: class {
-    
     static var defaultSortDescriptors: [SortDescriptor] { get }
     static var defaultPredicate: NSPredicate { get }
 }
 
 // default implementation of Managed protocol
 extension Object: Managed {
-    
     static var defaultSortDescriptors: [SortDescriptor] {
-        return []
+        return [SortDescriptor(keyPath: "sortOrder", ascending: true)]
     }
     
     static var defaultPredicate: NSPredicate {
-        return NSPredicate(value: true)
+        return NSPredicate(format: "isDeleted = false")
     }
 }
 
 // MARK: Realms
 
 final class Map: Object {
-
     @objc dynamic var id: String = UUID().uuidString
     @objc dynamic var name: String = ""
     @objc dynamic var favorite: Bool = false
@@ -135,7 +132,6 @@ final class Map: Object {
 }
 
 final class Item: Object {
-
     @objc dynamic var id: String = UUID().uuidString
     @objc dynamic var name: String = ""
     @objc dynamic var favorite: Bool = false
@@ -156,7 +152,6 @@ final class Item: Object {
 // Der Schlüssel kann aber über den Namen, z.B. UPPERCASE definiert werden, damit die Schreibung im Namen gleich
 // bleibt und die id eindeutig ist uns es keine Doubletten gibt.
 final class Tag: Object {
-
     @objc dynamic var id: String = UUID().uuidString
     @objc dynamic var name: String = ""
     @objc dynamic var isDeleted: Bool = false
@@ -173,8 +168,8 @@ final class Tag: Object {
     }
 }
 
-final class KeyValue: Object {
-
+//final
+class KeyValue: Object {
     enum KeyValueType: Int {
         case integer = 1
         case string = 2
@@ -194,34 +189,9 @@ final class KeyValue: Object {
     override static func primaryKey() -> String? {
         return "name"
     }
-
 }
 
-// Adds the Managed protocol (includes default implementation) to Item Realm
-/*
-extension Item: Managed {
-
-    static var defaultSortDescriptors: [SortDescriptor] {
-        return [SortDescriptor(keyPath: "sortOrder", ascending: true)]
-    }
-    
-    static var defaultPredicate: NSPredicate {
-        return NSPredicate(format: "isDeleted = false")
-    }
-}
-*/
-
-// Adds the Managed protocol (includes default implementation) to Tag Realm
-//extension Tag: Managed {
-//
-//    static var defaultSortDescriptors: [SortDescriptor] {
-//        return [SortDescriptor(keyPath: "name", ascending: true)]
-//    }
-//
-//    static var defaultPredicate: NSPredicate {
-//        return NSPredicate(format: "isDeleted = false")
-//    }
-//}
+// MARK: IceCreme protocols assignment for iCloud sync
 
 extension Map: CKRecordConvertible {}
 extension Map: CKRecordRecoverable {}

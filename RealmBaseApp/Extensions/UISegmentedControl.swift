@@ -2,7 +2,7 @@ import UIKit
 
 extension UISegmentedControl {
     
-    public enum SegmentIdentifier: Int {
+    enum SegmentIdentifier: Int {
         case manualy = 0
         case name = 1
         case date = 2

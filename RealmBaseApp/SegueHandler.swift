@@ -1,6 +1,6 @@
 import UIKit
 
-public protocol SegueHandler {
+protocol SegueHandler {
     associatedtype SegueIdentifier: RawRepresentable
 }
 
@@ -30,8 +30,7 @@ extension SegueHandler where Self: UIViewController, SegueIdentifier.RawValue ==
         return segueIdentifier
     }
     
-    public func performSegue(segueIdentifier: SegueIdentifier, sender: Any? = nil) {
+    func performSegue(segueIdentifier: SegueIdentifier, sender: Any? = nil) {
         performSegue(withIdentifier: segueIdentifier.rawValue, sender: sender)
     }
-
 }

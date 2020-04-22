@@ -3,13 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		24078443216FCBB900D5DC45 /* MainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24078442216FCBB900D5DC45 /* MainSplitViewController.swift */; };
 		24581FDD217BDA2200FB221F /* RealmBaseAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */; };
-		2461C1082173DDC9009432CE /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2461C1072173DDC9009432CE /* UITableView.swift */; };
+		2461C1082173DDC9009432CE /* UITableView+setEmptyMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2461C1072173DDC9009432CE /* UITableView+setEmptyMessage.swift */; };
 		247F84FA2188E76500E8B279 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 247F84F92188E76500E8B279 /* CloudKit.framework */; };
 		247F84FC218B662900E8B279 /* ItemsTableViewController+Drag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F84FB218B662900E8B279 /* ItemsTableViewController+Drag.swift */; };
 		247F8500218BBD5300E8B279 /* SortOptionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F84FF218BBD5300E8B279 /* SortOptionsController.swift */; };
@@ -18,6 +18,9 @@
 		247F8506218C620300E8B279 /* SortOptionsController+TableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F8505218C620300E8B279 /* SortOptionsController+TableViewDataSource.swift */; };
 		247F8508218C625400E8B279 /* UISegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F8507218C625400E8B279 /* UISegmentedControl.swift */; };
 		247F850C218CB3F900E8B279 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F850B218CB3F900E8B279 /* UIColor.swift */; };
+		2496C8352286CC5700805B72 /* UITableView+LayoutHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496C8342286CC5700805B72 /* UITableView+LayoutHeaderView.swift */; };
+		2496C8372289483600805B72 /* Toaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496C8362289483600805B72 /* Toaster.swift */; };
+		2496C83922894CB000805B72 /* UIView+FadeInOut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496C83822894CB000805B72 /* UIView+FadeInOut.swift */; };
 		24AB60762191876B00576FFE /* Identifiyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AB60752191876B00576FFE /* Identifiyable.swift */; };
 		24BC88D721D7A80E00200BAF /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BC88D621D7A80E00200BAF /* CustomViewController.swift */; };
 		24D33D2C2199B4FA001B7B2F /* SortOptionsPresentViewControllerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D33D292199B4F9001B7B2F /* SortOptionsPresentViewControllerAnimator.swift */; };
@@ -73,7 +76,7 @@
 		24581FDA217BDA2200FB221F /* RealmBaseAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RealmBaseAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		24581FDC217BDA2200FB221F /* RealmBaseAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBaseAppTests.swift; sourceTree = "<group>"; };
 		24581FDE217BDA2200FB221F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2461C1072173DDC9009432CE /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
+		2461C1072173DDC9009432CE /* UITableView+setEmptyMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+setEmptyMessage.swift"; sourceTree = "<group>"; };
 		247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RealmBaseApp.entitlements; sourceTree = "<group>"; };
 		247F84F92188E76500E8B279 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		247F84FB218B662900E8B279 /* ItemsTableViewController+Drag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ItemsTableViewController+Drag.swift"; sourceTree = "<group>"; };
@@ -83,6 +86,9 @@
 		247F8505218C620300E8B279 /* SortOptionsController+TableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SortOptionsController+TableViewDataSource.swift"; sourceTree = "<group>"; };
 		247F8507218C625400E8B279 /* UISegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControl.swift; sourceTree = "<group>"; };
 		247F850B218CB3F900E8B279 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		2496C8342286CC5700805B72 /* UITableView+LayoutHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+LayoutHeaderView.swift"; sourceTree = "<group>"; };
+		2496C8362289483600805B72 /* Toaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toaster.swift; sourceTree = "<group>"; };
+		2496C83822894CB000805B72 /* UIView+FadeInOut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FadeInOut.swift"; sourceTree = "<group>"; };
 		24AB60752191876B00576FFE /* Identifiyable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiyable.swift; sourceTree = "<group>"; };
 		24BC88D421D7A16000200BAF /* Reusable.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Reusable.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24BC88D621D7A80E00200BAF /* CustomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
@@ -163,7 +169,9 @@
 			children = (
 				247F8507218C625400E8B279 /* UISegmentedControl.swift */,
 				247F850B218CB3F900E8B279 /* UIColor.swift */,
-				2461C1072173DDC9009432CE /* UITableView.swift */,
+				2461C1072173DDC9009432CE /* UITableView+setEmptyMessage.swift */,
+				2496C8362289483600805B72 /* Toaster.swift */,
+				2496C83822894CB000805B72 /* UIView+FadeInOut.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -213,6 +221,7 @@
 				247F84F82188E75B00E8B279 /* RealmBaseApp.entitlements */,
 				247F84FB218B662900E8B279 /* ItemsTableViewController+Drag.swift */,
 				24AB60752191876B00576FFE /* Identifiyable.swift */,
+				2496C8342286CC5700805B72 /* UITableView+LayoutHeaderView.swift */,
 			);
 			path = RealmBaseApp;
 			sourceTree = "<group>";
@@ -361,19 +370,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
-				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RealmBaseApp/Pods-RealmBaseApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		90E6B54FBEBD8BEE6F79894F /* [CP] Check Pods Manifest.lock */ = {
@@ -432,13 +438,16 @@
 				24F4978821836ECF00955AF7 /* Item.swift in Sources */,
 				247F84FC218B662900E8B279 /* ItemsTableViewController+Drag.swift in Sources */,
 				24F14D35214CF77600C3CC36 /* AppDelegate.swift in Sources */,
+				2496C8352286CC5700805B72 /* UITableView+LayoutHeaderView.swift in Sources */,
 				24F14D47214CFD6500C3CC36 /* ItemsTableViewController.swift in Sources */,
 				24F14D49214CFEA800C3CC36 /* ItemViewController.swift in Sources */,
 				24F14D4B214CFF6C00C3CC36 /* ItemUpdateTableViewController.swift in Sources */,
 				247F850C218CB3F900E8B279 /* UIColor.swift in Sources */,
 				24F4978A21837F9400955AF7 /* SegueHandler.swift in Sources */,
-				2461C1082173DDC9009432CE /* UITableView.swift in Sources */,
+				2461C1082173DDC9009432CE /* UITableView+setEmptyMessage.swift in Sources */,
+				2496C83922894CB000805B72 /* UIView+FadeInOut.swift in Sources */,
 				247F8500218BBD5300E8B279 /* SortOptionsController.swift in Sources */,
+				2496C8372289483600805B72 /* Toaster.swift in Sources */,
 				247F8506218C620300E8B279 /* SortOptionsController+TableViewDataSource.swift in Sources */,
 				24F4978E2184C02800955AF7 /* Notification.swift in Sources */,
 				24D33D2D2199B4FA001B7B2F /* SortOptionsTransitioningDelegate.swift in Sources */,
@@ -652,16 +661,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = RealmBaseApp/RealmBaseApp.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = L79BTFY6FV;
+				DEVELOPMENT_TEAM = XS554Q5YY9;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseApp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.mett.RealmBaseApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -673,16 +684,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = RealmBaseApp/RealmBaseApp.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = L79BTFY6FV;
+				DEVELOPMENT_TEAM = XS554Q5YY9;
 				INFOPLIST_FILE = RealmBaseApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.mayflower.jo.RealmBaseApp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.mett.RealmBaseApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -14,4 +14,3 @@ extension TableViewSectionHandler where Self: UITableViewController, TableViewSe
     }
     
 }
-
